@@ -12,7 +12,7 @@ public class BufferedInputStream {
     private BufferedReader br;
     private int size;
     private char[] buffer;
-    private int currentPos;
+    private String tmp_next_line;
 
     private static int DEFAULT_CHAR_BUFFER_SIZE = 8192; // Default buffer size for the buffered reader
 
@@ -23,7 +23,7 @@ public class BufferedInputStream {
         this.path = path;
         this.br = null;
         this.size = DEFAULT_CHAR_BUFFER_SIZE;
-        this.currentPos = 0; // Used for the third implementation.
+        this.tmp_next_line = "";
     }
 
     public BufferedInputStream(String path, int size) {
@@ -43,7 +43,7 @@ public class BufferedInputStream {
 
     String readln() throws IOException {
         if(size == DEFAULT_CHAR_BUFFER_SIZE) {
-            return br.readLine();
+            return br.readLine() + "\n";
         } else {
             String line = "";
             int nbChars = fileReader.read(this.buffer);
@@ -51,8 +51,7 @@ public class BufferedInputStream {
             while(!containsEndLine(this.buffer) && nbChars >= size) {
                 line += String.valueOf(this.buffer);
                 flushBuffer();
-                nbChars = fileReader.read(this.buffer, this.currentPos, this.size);
-                this.currentPos += this.size;
+                nbChars = fileReader.read(this.buffer);
             }
 
             int i = 0;
@@ -60,14 +59,29 @@ public class BufferedInputStream {
                 line += buffer[i];
                 i++;
             }
-            this.currentPos += i;
+
+            line = tmp_next_line + line;
+            tmp_next_line = "";
+
+            while(i < nbChars){
+                tmp_next_line += buffer[i];
+                i++;
+            }
+            flushBuffer();
 
             return line;
         }
     }
 
     private boolean containsEndLine(char[] buffer) {
-        return false;
+        boolean ok = false;
+        for(int i = 0; i < buffer.length; i++){
+            if(buffer[i] == '\n'){
+                ok = true;
+                break;
+            }
+        }
+        return ok;
     }
 
     private void flushBuffer() {
@@ -75,14 +89,27 @@ public class BufferedInputStream {
     }
 
     void seek(int pos, boolean absolute) throws IOException {
-        if (absolute) {
-            FileReader tmp_fileReader = new FileReader(file);
-            BufferedReader tmp_bufferedReader = new BufferedReader(tmp_fileReader);
-            tmp_bufferedReader.skip(pos);
-            this.br = tmp_bufferedReader;
+        if(size == DEFAULT_CHAR_BUFFER_SIZE) {
+            if (absolute) {
+                FileReader tmp_fileReader = new FileReader(file);
+                BufferedReader tmp_bufferedReader = new BufferedReader(tmp_fileReader);
+                tmp_bufferedReader.skip(pos);
+                this.br = tmp_bufferedReader;
+            } else {
+                br.skip(pos);
+            }
         } else {
-            br.skip(pos);
+            if (absolute) {
+                FileReader tmp_fileReader = new FileReader(file);
+                tmp_fileReader.skip(pos);
+                fileReader = tmp_fileReader;
+                tmp_next_line = "";
+            } else{
+                fileReader.skip(pos);
+                tmp_next_line = "";
+            }
         }
+
     }
 
     boolean endofstream() throws IOException {

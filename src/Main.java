@@ -28,6 +28,9 @@ public class Main {
             BufferedInputStream is = new BufferedInputStream("src/file.txt", 10);
             is.open();
             os.writeln(is.readln());
+            is.seek(3,true);
+            os.writeln(is.readln());
+            os.writeln(is.readln());
 
             os.close();
         }  catch (Exception e) {
