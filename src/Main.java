@@ -25,7 +25,7 @@ public class Main {
             BufferedOutputStream os = new BufferedOutputStream("src/create.txt");
             os.create();
 
-            BufferedInputStream is = new BufferedInputStream("src/file.txt");
+            BufferedInputStream is = new BufferedInputStream("src/file.txt", 10);
             is.open();
             os.writeln(is.readln());
 
