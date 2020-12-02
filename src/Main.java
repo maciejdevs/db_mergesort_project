@@ -22,13 +22,13 @@ public class Main {
 //
 //            os.close();
 
-            BufferedOutputStream os = new BufferedOutputStream("src/create.txt");
+            BufferedOutputStream os = new BufferedOutputStream("src/create.txt", 10);
             os.create();
 
-            BufferedInputStream is = new BufferedInputStream("src/file.txt", 10);
+            BufferedInputStream is = new BufferedInputStream("src/file.txt");
             is.open();
             os.writeln(is.readln());
-            is.seek(3,true);
+            //is.seek(3,true);
             os.writeln(is.readln());
             os.writeln(is.readln());
 
