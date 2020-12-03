@@ -40,11 +40,14 @@ public class BufferedOutputStream {
         } else {
             char[] lineArray = line.toCharArray();
             if(lineArray.length <= this.size){
-                for(int i = 0; i < this.size; i++){
+                int j = 0;
+                for(int i = 0; i < lineArray.length; i++){
                     this.buffer[i] = lineArray[i];
+                    j = i;
                 }
-                for(char c : this.buffer){
-                    fileWriter.write(c);
+                this.buffer[j+1] = '\n';
+                for(int k = 0; k < j+1; k++){
+                    fileWriter.write(this.buffer[k]);
                 }
                 flushBuffer();
             } else {
