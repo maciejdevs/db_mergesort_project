@@ -35,7 +35,9 @@ public class BufferedOutputStream {
     }
 
     void writeln(String line) throws IOException {
-        if(size == DEFAULT_CHAR_BUFFER_SIZE) {
+        if(line.equals("")) {
+            return;
+        } else if(size == DEFAULT_CHAR_BUFFER_SIZE) {
             bw.write(line);
         } else {
             char[] lineArray = line.toCharArray();

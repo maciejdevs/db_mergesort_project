@@ -1,10 +1,7 @@
 import java.io.*;
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 
 public class MemoryMapInputStream {
 
@@ -19,9 +16,9 @@ public class MemoryMapInputStream {
     private MappedByteBuffer mapBuff;
     private int positionInMapBuff;
     private int offset;
-    private String tmpString;
+    private String tmpLine;
 
-    public MemoryMapInputStream(String path, int buffSize){
+    public MemoryMapInputStream(String path, int buffSize) {
         this.path = path;
         this.isOpen = false;
         this.offset = 0;
@@ -30,7 +27,7 @@ public class MemoryMapInputStream {
     }
 
     void open() throws IOException {
-        if(!isOpen){
+        if (!isOpen) {
             isOpen = true;
 
             file = new File(path);
@@ -44,32 +41,87 @@ public class MemoryMapInputStream {
         }
     }
 
-    void allocateMemory() throws IOException {
-        mapBuff = fileChannel.map(FileChannel.MapMode.READ_ONLY, this.offset, this.buffSize);
-        bytesLeft -= buffSize;
-        offset += buffSize;
-        positionInMapBuff = 0;
-    }
+    boolean allocateMemory() throws IOException {
+        if (bytesLeft > 0) {
+            if (mapBuff != null) {
+                mapBuff.clear();
+            }
 
-    void readln() throws IOException {
-        if(this.positionInMapBuff >= this.buffSize){
-            //allocateMemory();
-        } else {
-            String line = readMemoryLine();
-            System.out.println(line);
+            if (fileSize - offset < buffSize) {
+                buffSize = (int) (fileSize - offset);
+            }
+
+            mapBuff = fileChannel.map(FileChannel.MapMode.READ_ONLY, this.offset, this.buffSize);
+            bytesLeft -= buffSize;
+            offset += buffSize;
+            positionInMapBuff = 0;
+
+            return true;
         }
+
+        return false;
     }
 
-    String readMemoryLine(){
-        CharBuffer charBuff = Charset.forName("UTF-8").decode(mapBuff);
-        return charBuff.toString();
+    String readln() throws IOException {
+        String line = "";
+
+        if (this.positionInMapBuff >= this.buffSize) {
+            if (allocateMemory()) {
+                line = readMemoryLine();
+
+                if (!tmpLine.isEmpty()) {
+                    line = tmpLine + line;
+                    tmpLine = "";
+                }
+
+                positionInMapBuff += line.length();
+
+                while(line.charAt(line.length() - 1) != '\n') {
+                    String tmp = "";
+                    allocateMemory();
+                    tmp = readMemoryLine();
+                    line += tmp;
+                    positionInMapBuff += tmp.length();
+                }
+            } else {
+                line = "";
+            }
+        } else {
+            line = readMemoryLine();
+//            System.out.println(line);
+            this.positionInMapBuff += line.length();
+
+            if (line.length() > 0 && line.charAt(line.length() - 1) != '\n') {
+                this.tmpLine = line;
+                line = "";
+            }
+        }
+
+        return line;
     }
 
-    void seek(){
+    String readMemoryLine() {
+        char[] charBuff = Charset.forName("UTF-8").decode(mapBuff).array();
+        String line = "";
+        int i = 0;
+
+        while (i < charBuff.length && charBuff[i] != '\n') {
+            line += charBuff[i];
+            i++;
+        }
+
+        if(i < charBuff.length && charBuff[i] == '\n') {
+            line += '\n';
+        }
+
+        return line;
+    }
+
+    void seek() {
 
     }
 
-    boolean endofstream(){
+    boolean endofstream() {
         return false;
     }
 

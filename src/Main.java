@@ -41,6 +41,10 @@ public class Main {
             MemoryMapInputStream is = new MemoryMapInputStream("src/file.txt", 10);
             is.open();
             is.readln();
+            System.out.println(is.readln());
+            System.out.println(is.readln());
+            System.out.println(is.readln());
+
 
         }  catch (Exception e) {
             e.printStackTrace();
