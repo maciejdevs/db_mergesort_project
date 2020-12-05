@@ -43,6 +43,8 @@ public class Main {
             System.out.print(is.readln());
             System.out.print(is.readln());
             System.out.print(is.readln());
+            System.out.print(is.readln());
+            System.out.print(is.readln());
 //            System.out.print(is.readln());
 
 

@@ -44,7 +44,7 @@ public class BufferedInputStream {
             String line = "";
 
             // Check if the tmp_next_line contains the entire next line. We should treat this case separately.
-            if (containsNextLine(tmpNextLine)) {
+            if (BufferUtils.containsNextLine(tmpNextLine)) {
                 line = handleNextLineFromTmpString(line);
             } else {
                 line = handleNextLineFromBuffer(line);
@@ -96,23 +96,6 @@ public class BufferedInputStream {
 
         flushTmpNextLine();
         return line;
-    }
-
-    /**
-     * Check if the string contains the entire next line.
-     * @param tmpNextLine the string that will be checked.
-     * @return true if the string contains at least two end of lines, false otherwise.
-     */
-    private boolean containsNextLine(String tmpNextLine) {
-        int endLinesCounter = 0;
-
-        for (int i = 0; i < tmpNextLine.length(); i++) {
-            if(tmpNextLine.charAt(i) == '\n') {
-                endLinesCounter++;
-            }
-        }
-
-        return endLinesCounter > 1;
     }
 
     private boolean containsEndLine(char[] buffer) {
