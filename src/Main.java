@@ -38,15 +38,37 @@ public class Main {
             os.close();
              **/
 
-            MemoryMapInputStream is = new MemoryMapInputStream("src/file.txt", 10);
-            is.open();
-            System.out.print(is.readln());
-            System.out.print(is.readln());
-            System.out.print(is.readln());
-            System.out.print(is.readln());
-            System.out.print(is.readln());
+//            MemoryMapInputStream is = new MemoryMapInputStream("src/file.txt", 10);
+//            is.open();
+//            System.out.print(is.readln());
+//            System.out.print(is.readln());
+//            System.out.print(is.readln());
+//            System.out.print(is.readln());
+//            System.out.print(is.readln());
 //            System.out.print(is.readln());
 
+            BufferedInputStream is = new BufferedInputStream("src/file.txt", 10);
+            MemoryMapOutputStream os = new MemoryMapOutputStream("src/create.txt");
+
+            os.create();
+
+            String tmp = is.readln();
+            System.out.print(tmp);
+            os.writeln(tmp);
+
+            tmp = is.readln();
+            System.out.print(tmp);
+            os.writeln(tmp);
+
+            tmp = is.readln();
+            System.out.print(tmp);
+            os.writeln(tmp);
+
+            tmp = is.readln();
+            System.out.print(tmp);
+            os.writeln(tmp);
+
+            os.close();
 
         }  catch (Exception e) {
             e.printStackTrace();
