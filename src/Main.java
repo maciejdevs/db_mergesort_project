@@ -22,6 +22,7 @@ public class Main {
 //
 //            os.close();
 
+            /**
             BufferedOutputStream os = new BufferedOutputStream("src/create.txt", 10);
             os.create();
 
@@ -35,6 +36,12 @@ public class Main {
             os.writeln(is.readln());
 
             os.close();
+             **/
+
+            MemoryMapInputStream is = new MemoryMapInputStream("src/file.txt", 10);
+            is.open();
+            is.readln();
+
         }  catch (Exception e) {
             e.printStackTrace();
         }
