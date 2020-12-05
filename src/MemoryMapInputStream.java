@@ -91,8 +91,8 @@ public class MemoryMapInputStream {
             this.positionInMapBuff += line.length();
 
             if (line.length() > 0 && line.charAt(line.length() - 1) != '\n') {
-                this.tmpLine = line;
-                line = "";
+                //this.tmpLine = line;
+                //line = "";
 //                line = readln();
             }
         }
