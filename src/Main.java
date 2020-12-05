@@ -22,7 +22,7 @@ public class Main {
 //
 //            os.close();
 
-            BufferedOutputStream os = new BufferedOutputStream("src/create.txt");
+            BufferedOutputStream os = new BufferedOutputStream("src/create.txt", 10);
             os.create();
 
             BufferedInputStream is = new BufferedInputStream("src/file.txt", 10);

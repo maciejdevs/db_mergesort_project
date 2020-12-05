@@ -57,21 +57,25 @@ public class BufferedInputStream {
     private String handleNextLineFromBuffer(String line) throws IOException {
         int nbChars = fileReader.read(this.buffer);
 
+        // Continue reading until the buffer contains an end of line
         while (!containsEndLine(this.buffer) && nbChars >= size) {
             line += String.valueOf(this.buffer);
             flushBuffer();
             nbChars = fileReader.read(this.buffer);
         }
 
+        // Add every character from the buffer before the first encountered end of line
         int i = 0;
         while (nbChars != -1 && i < nbChars && buffer[i] != '\n') {
             line += buffer[i];
             i++;
         }
 
+        // Concat the line with the temporary next line from the previous reading.
         line = tmpNextLine + line;
         tmpNextLine = "";
 
+        // Everything that wasn't read from the buffer is saved in the temporary next line, so it won't be lost.
         while (i < nbChars) {
             tmpNextLine += buffer[i];
             i++;
