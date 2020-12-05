@@ -47,9 +47,11 @@ public class Main {
 //            System.out.print(is.readln());
 //            System.out.print(is.readln());
 
-            BufferedInputStream is = new BufferedInputStream("src/file.txt", 10);
+//            BufferedInputStream is = new BufferedInputStream("src/file.txt", 10);
+            MemoryMapInputStream is = new MemoryMapInputStream("src/file.txt", 10);
             MemoryMapOutputStream os = new MemoryMapOutputStream("src/create.txt");
 
+            is.open();
             os.create();
 
             String tmp = is.readln();
