@@ -81,19 +81,19 @@ public class MemoryMapInputStream {
                     allocateMemory();
                     tmp = readMemoryLine();
                     line += tmp;
-                    positionInMapBuff += tmp.length();
+                    positionInMapBuff += line.length();
                 }
             } else {
                 line = "";
             }
         } else {
             line = readMemoryLine();
-//            System.out.println(line);
             this.positionInMapBuff += line.length();
 
             if (line.length() > 0 && line.charAt(line.length() - 1) != '\n') {
                 this.tmpLine = line;
                 line = "";
+//                line = readln();
             }
         }
 
