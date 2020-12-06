@@ -61,7 +61,7 @@ public class SequentialReading {
     public void length4() throws IOException {
         int sum = 0;
         int counter = 0;
-        MemoryMapInputStream is = new MemoryMapInputStream(path, 8192);
+        MemoryMapInputStream is = new MemoryMapInputStream(path, 100);
         is.open();
         String line = "";
 

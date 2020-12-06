@@ -28,12 +28,13 @@ public class BufferedInputStream {
         this.buffer = new char[this.size];
     }
 
-    void open() throws FileNotFoundException {
+    void open() throws IOException {
         if (!isOpen) {
             isOpen = true;
             file = new File(path);
             fileReader = new FileReader(file);
             br = new BufferedReader(fileReader);
+            br.mark(getFileSize());
         }
     }
 
@@ -132,10 +133,13 @@ public class BufferedInputStream {
     void seek(int pos, boolean absolute) throws IOException {
         if (size == DEFAULT_CHAR_BUFFER_SIZE) {
             if (absolute) {
-                FileReader tmp_fileReader = new FileReader(file);
-                BufferedReader tmp_bufferedReader = new BufferedReader(tmp_fileReader);
-                tmp_bufferedReader.skip(pos);
-                this.br = tmp_bufferedReader;
+//                FileReader tmp_fileReader = new FileReader(file);
+//                BufferedReader tmp_bufferedReader = new BufferedReader(tmp_fileReader);
+//                tmp_bufferedReader.skip(pos);
+//                this.br = tmp_bufferedReader;
+
+                br.reset();
+                br.skip(pos);
             } else {
                 br.skip(pos);
             }
@@ -164,5 +168,9 @@ public class BufferedInputStream {
         br.reset();
 
         return byte1 == -1;
+    }
+
+    int getFileSize() {
+        return (int) file.length();
     }
 }

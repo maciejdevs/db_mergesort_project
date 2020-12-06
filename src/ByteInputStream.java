@@ -12,6 +12,7 @@ public class ByteInputStream {
     private boolean isOpen;
     private FileReader fileReader;
     private int currentPos;
+    private FileReader tmp_fileReader;
 
     public ByteInputStream(String path) {
         this.file = null;
@@ -21,7 +22,7 @@ public class ByteInputStream {
         this.currentPos = 0;
     }
 
-    void open() throws FileNotFoundException {
+    void open() throws IOException {
         if (!isOpen) {
             isOpen = true;
             file = new File(path);
@@ -60,5 +61,9 @@ public class ByteInputStream {
         this.seek(currentPos, true);
 
         return tmp == -1;
+    }
+
+    int getFileSize() {
+        return (int) file.length();
     }
 }

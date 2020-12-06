@@ -68,6 +68,28 @@ public class MemoryMapInputStream {
         return false;
     }
 
+    boolean allocateMemory(int offset) throws IOException {
+        if (bytesLeft > 0) {
+            if (mapBuff != null) {
+                mapBuff.clear();
+            }
+
+            if (fileSize - offset < buffSize) {
+                buffSize = (int) (fileSize - offset);
+            }
+
+            mapBuff = fileChannel.map(FileChannel.MapMode.READ_ONLY, offset, this.buffSize);
+            bytesLeft -= buffSize;
+            offset += buffSize;
+            this.offset = offset;
+            positionInMapBuff = 0;
+
+            return true;
+        }
+
+        return false;
+    }
+
     String readln() throws IOException {
         String line = "";
 
@@ -89,7 +111,7 @@ public class MemoryMapInputStream {
                     line += tmp;
                     positionInMapBuff += line.length();
 
-                    if(tmp.isEmpty() && line.charAt(line.length() - 1) != '\n') {
+                    if (tmp.isEmpty() && line.charAt(line.length() - 1) != '\n') {
                         line += '\n';
                     }
                 }
@@ -108,14 +130,14 @@ public class MemoryMapInputStream {
                 line += tmp;
                 positionInMapBuff += line.length();
 
-                if(tmp.isEmpty() && line.charAt(line.length() - 1) != '\n') {
+                if (tmp.isEmpty() && line.charAt(line.length() - 1) != '\n') {
                     line += '\n';
                 }
             }
         }
 
         // A line cannot begin with a '\n'
-        if(line.length() > 0 && line.charAt(0) == '\n') {
+        if (line.length() > 0 && line.charAt(0) == '\n') {
             line = line.substring(1);
         }
 
@@ -172,8 +194,15 @@ public class MemoryMapInputStream {
         return line;
     }
 
-    void seek() {
-
+    void seek(int pos, boolean absolute) throws IOException {
+        if (absolute) {
+            bytesLeft = fileSize;
+            allocateMemory(pos);
+            mapBuff.position(0);
+            tmpNextLine = "";
+        } else {
+            throw new UnsupportedOperationException("There is no need for relative seek");
+        }
     }
 
     boolean endofstream() {
@@ -193,5 +222,9 @@ public class MemoryMapInputStream {
         // take the string from the second '\n' (skip the line)
         tmpNextLine = tmpNextLine.substring(second);
 
+    }
+
+    int getFileSize() {
+        return (int) file.length();
     }
 }

@@ -22,8 +22,8 @@ public class ByteOutputStream {
         this.file.createNewFile();
     }
 
-    void writeln(List<Character> line) throws IOException {
-        for (char c : line) {
+    void writeln(String line) throws IOException {
+        for (char c : line.toCharArray()) {
             fileWriter.write(c);
         }
     }
