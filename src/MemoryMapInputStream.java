@@ -19,6 +19,7 @@ public class MemoryMapInputStream {
     private int offset;
     private String tmpLine;
     private String tmpNextLine;
+    private boolean EOF;
 
     public MemoryMapInputStream(String path, int buffSize) {
         this.path = path;
@@ -28,6 +29,7 @@ public class MemoryMapInputStream {
         this.positionInMapBuff = 0;
         this.tmpLine = "";
         this.tmpNextLine = "";
+        this.EOF = false;
     }
 
     void open() throws IOException {
@@ -93,6 +95,7 @@ public class MemoryMapInputStream {
                 }
             } else {
                 line = tmpNextLine;
+                this.EOF = true;
             }
         } else {
             line = readMemoryLine();
@@ -174,7 +177,7 @@ public class MemoryMapInputStream {
     }
 
     boolean endofstream() {
-        return false;
+        return this.EOF;
     }
 
     /**

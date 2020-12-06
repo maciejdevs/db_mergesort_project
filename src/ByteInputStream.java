@@ -29,15 +29,14 @@ public class ByteInputStream {
         }
     }
 
-    List readln() throws IOException {
-        List line = new ArrayList<>();
+    String readln() throws IOException {
+        String line = "";
         char temp_char;
 
         do {
             temp_char = (char) fileReader.read();
-            line.add(temp_char);
+            line += temp_char;
             currentPos++;
-            System.out.print(temp_char);
         } while (temp_char != '\n' && !endofstream());
 
         return line;

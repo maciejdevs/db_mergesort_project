@@ -155,7 +155,12 @@ public class BufferedInputStream {
 
     boolean endofstream() throws IOException {
         br.mark(1);
-        int byte1 = br.read();
+        int byte1 = 0;
+        if (size == DEFAULT_CHAR_BUFFER_SIZE) {
+            byte1 = br.read();
+        } else {
+            byte1 = fileReader.read();
+        }
         br.reset();
 
         return byte1 == -1;

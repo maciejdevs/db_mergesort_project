@@ -1,6 +1,3 @@
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
 public class Main {
     public static void main(String[] args) {
 
@@ -48,29 +45,39 @@ public class Main {
 //            System.out.print(is.readln());
 
 //            BufferedInputStream is = new BufferedInputStream("src/file.txt", 10);
-            MemoryMapInputStream is = new MemoryMapInputStream("src/file.txt", 10);
-            MemoryMapOutputStream os = new MemoryMapOutputStream("src/create.txt");
+//            MemoryMapInputStream is = new MemoryMapInputStream("src/file.txt", 10);
+//            MemoryMapOutputStream os = new MemoryMapOutputStream("src/create.txt");
+//
+//            is.open();
+//            os.create();
+//
+//            String tmp = is.readln();
+//            System.out.print(tmp);
+//            os.writeln(tmp);
+//
+//            tmp = is.readln();
+//            System.out.print(tmp);
+//            os.writeln(tmp);
+//
+//            tmp = is.readln();
+//            System.out.print(tmp);
+//            os.writeln(tmp);
+//
+//            tmp = is.readln();
+//            System.out.print(tmp);
+//            os.writeln(tmp);
+//
+//            os.close();
 
-            is.open();
-            os.create();
+            long startTime = System.currentTimeMillis();
 
-            String tmp = is.readln();
-            System.out.print(tmp);
-            os.writeln(tmp);
+            SequentialReading sequentialReading = new SequentialReading("src/imdb/company_name.csv");
+            sequentialReading.length4();
 
-            tmp = is.readln();
-            System.out.print(tmp);
-            os.writeln(tmp);
-
-            tmp = is.readln();
-            System.out.print(tmp);
-            os.writeln(tmp);
-
-            tmp = is.readln();
-            System.out.print(tmp);
-            os.writeln(tmp);
-
-            os.close();
+            long stopTime = System.currentTimeMillis();
+            long elapsedTime = stopTime - startTime;
+            double elapsedTimeInSecond = (double) elapsedTime / 1000;
+            System.out.println(elapsedTimeInSecond);
 
         }  catch (Exception e) {
             e.printStackTrace();
