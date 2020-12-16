@@ -76,7 +76,7 @@ public class Main {
             long startTime = System.currentTimeMillis();
 
 //            SequentialReading sequentialReading = new SequentialReading("src/imdb/test.csv");
-            SequentialReading sequentialReading = new SequentialReading("src/imdb/test.csv");
+            SequentialReading sequentialReading = new SequentialReading("src/imdb/movie_companies.csv");
             sequentialReading.length4();
 
 //            RandomReading randomReading = new RandomReading("src/imdb/company_name.csv", 100);

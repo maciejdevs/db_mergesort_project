@@ -103,8 +103,6 @@ public class MemoryMapInputStream {
                     tmpLine = "";
                 }
 
-//                positionInMapBuff += line.length();
-
                 while (line.charAt(line.length() - 1) != '\n') {
                     String tmp = "";
 
@@ -113,19 +111,16 @@ public class MemoryMapInputStream {
 
                     tmp = readMemoryLine();
                     line += tmp;
-//                    positionInMapBuff += line.length();
 
                     if (tmp.isEmpty() && line.charAt(line.length() - 1) != '\n') {
                         line += '\n';
                     }
                 }
             } else {
-//                line = tmpNextLine;
                 this.EOF = true;
             }
         } else {
             line = readMemoryLine();
-//            this.positionInMapBuff += line.length();
 
             while (line.length() > 0 && line.charAt(line.length() - 1) != '\n') {
                 String tmp = "";
@@ -133,20 +128,15 @@ public class MemoryMapInputStream {
                 // End of stream reached
                 if (!allocateMemory())
                     break;
+
                 tmp = readMemoryLine();
                 line += tmp;
-//                positionInMapBuff += line.length();
 
                 if (tmp.isEmpty() && line.charAt(line.length() - 1) != '\n') {
                     line += '\n';
                 }
             }
         }
-
-        // A line cannot begin with a '\n'
-//        if (line.length() > 0 && line.charAt(0) == '\n') {
-//            line = line.substring(1);
-//        }
 
         return line;
     }
@@ -159,22 +149,12 @@ public class MemoryMapInputStream {
             return line;
         }
 
-//            CharBuffer charBuff = Charset.forName("UTF-8").decode(mapBuff);
-//            char[] charBuffArray = charBuff.array();
         int i = 0;
 
         ByteBuffer tmp = ByteBuffer.allocate(2);
         byte c;
-//            char x = 0;
-//            tmp.asCharBuffer().put((char) c);
-//            while ((x = tmp.getChar()) != 0)
-//                System.out.print(x + " ");
-//            tmp.rewind();
-
         final int indexOfCharacter = 1;
-//            char decodedChar = Charset.forName("UTF-8").decode(tmp).charAt(indexOfCharacter);
         char decodedChar = 0;
-        int rem = mapBuff.remaining();
 
         do {
             tmp.clear();
@@ -183,42 +163,13 @@ public class MemoryMapInputStream {
             tmp.putChar((char) c);
             tmp.rewind();
             decodedChar = Charset.forName("UTF-8").decode(tmp).charAt(indexOfCharacter);
-            if (decodedChar != '\r')
+            if (decodedChar != '\r' && decodedChar != '\n')
                 line += decodedChar;
-        } while (mapBuff.remaining() > 0 && decodedChar != '\r');
+        } while (mapBuff.remaining() > 0 && decodedChar != '\r' && decodedChar != '\n');
 
-            /*while(mapBuff.remaining() > 0) {
-                line += decodedChar;
-
-//                tmp = ByteBuffer.allocate(2);
-                tmp.clear();
-                c = mapBuff.get();
-                tmp.putChar((char) c);
-                tmp.rewind();
-                decodedChar = Charset.forName("UTF-8").decode(tmp).charAt(indexOfCharacter);
-            }*/
-
-//            mapBuff.rewind();
-
-//            while (i < charBuffArray.length && charBuffArray[i] != '\n') {
-//                line += charBuffArray[i];
-//                i++;
-//            }
-
-        if (decodedChar == '\r') {
+        if (decodedChar == '\r' || decodedChar == '\n') {
             line += '\n';
         }
-
-/*            // Concat the line with the temporary next line from the previous reading.
-            line = tmpNextLine + line;
-            tmpNextLine = "";
-
-            // Everything that wasn't read from the buffer is saved in the temporary next line, so it won't be lost.
-            while (i < decodedChars.length) {
-                tmpNextLine += decodedChars[i];
-                i++;
-            }*/
-
 
         return line;
     }
