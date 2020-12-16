@@ -48,13 +48,14 @@ public class RandomReading {
         int sum = 0;
         int p = 0;
         int l = 0;
-        BufferedInputStream is = new BufferedInputStream(path, 32);
+        BufferedInputStream is = new BufferedInputStream(path, 8191);
         is.open();
 
         for (int i = 0; i < j; i++) {
-            p = (int) (Math.random() * is.getFileSize());
+            p = 14;
             is.seek(p, true);
-            l = is.readln().length();
+            String y = is.readln();
+            l = y.length();
             sum += l;
         }
 
@@ -65,13 +66,15 @@ public class RandomReading {
         int sum = 0;
         int p = 0;
         int l = 0;
-        MemoryMapInputStream is = new MemoryMapInputStream(path, 8192);
+        MemoryMapInputStream is = new MemoryMapInputStream(path, 10);
         is.open();
 
         for (int i = 0; i < j; i++) {
-            p = (int) (Math.random() * is.getFileSize());
+//            p = (int) (Math.random() * is.getFileSize());
+            p = 2;
             is.seek(p, true);
             l = is.readln().length();
+//            System.out.println(i);
             sum += l;
         }
 

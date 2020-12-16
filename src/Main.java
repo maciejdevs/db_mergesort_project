@@ -26,14 +26,18 @@ public class Main {
 //            BufferedOutputStream os = new BufferedOutputStream("src/create.txt");
 //            os.create();
 //
-//            BufferedInputStream is = new BufferedInputStream("src/file.txt");
+//            BufferedInputStream is = new BufferedInputStream("src/file.txt", 10);
 //            is.open();
+//            System.out.println(is.readln());
+//            System.out.println(is.readln());
+//            System.out.println(is.readln());
+//            os.writeln(is.readln());
 //            os.writeln(is.readln());
 //            is.seek(3,true);
 //            os.writeln(is.readln());
 //            is.seek(5,true);
 //            os.writeln(is.readln());
-//
+
 //            os.close();
 
 
@@ -71,11 +75,12 @@ public class Main {
 
             long startTime = System.currentTimeMillis();
 
-//            SequentialReading sequentialReading = new SequentialReading("src/imdb/company_name.csv");
-//            sequentialReading.length4();
+//            SequentialReading sequentialReading = new SequentialReading("src/imdb/test.csv");
+            SequentialReading sequentialReading = new SequentialReading("src/imdb/test.csv");
+            sequentialReading.length4();
 
-            RandomReading randomReading = new RandomReading("src/imdb/company_name.csv", 10000);
-            randomReading.randJump4();
+//            RandomReading randomReading = new RandomReading("src/imdb/company_name.csv", 100);
+//            randomReading.randJump3();
 
             long stopTime = System.currentTimeMillis();
             long elapsedTime = stopTime - startTime;

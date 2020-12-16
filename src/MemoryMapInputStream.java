@@ -1,4 +1,5 @@
 import java.io.*;
+import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
@@ -91,7 +92,7 @@ public class MemoryMapInputStream {
     }
 
     String readln() throws IOException {
-        String line = "";
+        String line = null;
 
         if (this.positionInMapBuff >= this.buffSize) {
             if (allocateMemory()) {
@@ -102,33 +103,39 @@ public class MemoryMapInputStream {
                     tmpLine = "";
                 }
 
-                positionInMapBuff += line.length();
+//                positionInMapBuff += line.length();
 
                 while (line.charAt(line.length() - 1) != '\n') {
                     String tmp = "";
-                    allocateMemory();
+
+                    if (!allocateMemory())
+                        break;
+
                     tmp = readMemoryLine();
                     line += tmp;
-                    positionInMapBuff += line.length();
+//                    positionInMapBuff += line.length();
 
                     if (tmp.isEmpty() && line.charAt(line.length() - 1) != '\n') {
                         line += '\n';
                     }
                 }
             } else {
-                line = tmpNextLine;
+//                line = tmpNextLine;
                 this.EOF = true;
             }
         } else {
             line = readMemoryLine();
-            this.positionInMapBuff += line.length();
+//            this.positionInMapBuff += line.length();
 
             while (line.length() > 0 && line.charAt(line.length() - 1) != '\n') {
                 String tmp = "";
-                allocateMemory();
+
+                // End of stream reached
+                if (!allocateMemory())
+                    break;
                 tmp = readMemoryLine();
                 line += tmp;
-                positionInMapBuff += line.length();
+//                positionInMapBuff += line.length();
 
                 if (tmp.isEmpty() && line.charAt(line.length() - 1) != '\n') {
                     line += '\n';
@@ -137,59 +144,81 @@ public class MemoryMapInputStream {
         }
 
         // A line cannot begin with a '\n'
-        if (line.length() > 0 && line.charAt(0) == '\n') {
-            line = line.substring(1);
-        }
+//        if (line.length() > 0 && line.charAt(0) == '\n') {
+//            line = line.substring(1);
+//        }
 
-        return line;
-    }
-
-    private String handleNextLineFromTmpString(String line) {
-        int i = 1; // skip the first '\n' which is useless in this case
-        int nbChars = tmpNextLine.length();
-
-        while (i < nbChars && tmpNextLine.charAt(i) != '\n') {
-            line += tmpNextLine.charAt(i);
-            i++;
-        }
-
-        if (i < nbChars && tmpNextLine.charAt(i) == '\n') {
-            line += '\n';
-        }
-
-        flushTmpNextLine();
         return line;
     }
 
     String readMemoryLine() {
         String line = "";
 
-        if (BufferUtils.containsNextLine(tmpNextLine)) {
-            line = handleNextLineFromTmpString(line);
-        } else {
-            CharBuffer charBuff = Charset.forName("UTF-8").decode(mapBuff);
-            char[] charBuffArray = charBuff.array();
-            int i = 0;
+        if (mapBuff.remaining() == 0) {
+            line += "\n";
+            return line;
+        }
 
-            while (i < charBuffArray.length && charBuffArray[i] != '\n') {
-                line += charBuffArray[i];
-                i++;
-            }
+//            CharBuffer charBuff = Charset.forName("UTF-8").decode(mapBuff);
+//            char[] charBuffArray = charBuff.array();
+        int i = 0;
 
-            if (i < charBuffArray.length && charBuffArray[i] == '\n') {
-                line += '\n';
-            }
+        ByteBuffer tmp = ByteBuffer.allocate(2);
+        byte c;
+//            char x = 0;
+//            tmp.asCharBuffer().put((char) c);
+//            while ((x = tmp.getChar()) != 0)
+//                System.out.print(x + " ");
+//            tmp.rewind();
 
-            // Concat the line with the temporary next line from the previous reading.
+        final int indexOfCharacter = 1;
+//            char decodedChar = Charset.forName("UTF-8").decode(tmp).charAt(indexOfCharacter);
+        char decodedChar = 0;
+        int rem = mapBuff.remaining();
+
+        do {
+            tmp.clear();
+            c = mapBuff.get();
+            positionInMapBuff++;
+            tmp.putChar((char) c);
+            tmp.rewind();
+            decodedChar = Charset.forName("UTF-8").decode(tmp).charAt(indexOfCharacter);
+            if (decodedChar != '\r')
+                line += decodedChar;
+        } while (mapBuff.remaining() > 0 && decodedChar != '\r');
+
+            /*while(mapBuff.remaining() > 0) {
+                line += decodedChar;
+
+//                tmp = ByteBuffer.allocate(2);
+                tmp.clear();
+                c = mapBuff.get();
+                tmp.putChar((char) c);
+                tmp.rewind();
+                decodedChar = Charset.forName("UTF-8").decode(tmp).charAt(indexOfCharacter);
+            }*/
+
+//            mapBuff.rewind();
+
+//            while (i < charBuffArray.length && charBuffArray[i] != '\n') {
+//                line += charBuffArray[i];
+//                i++;
+//            }
+
+        if (decodedChar == '\r') {
+            line += '\n';
+        }
+
+/*            // Concat the line with the temporary next line from the previous reading.
             line = tmpNextLine + line;
             tmpNextLine = "";
 
             // Everything that wasn't read from the buffer is saved in the temporary next line, so it won't be lost.
-            while (i < charBuffArray.length) {
-                tmpNextLine += charBuffArray[i];
+            while (i < decodedChars.length) {
+                tmpNextLine += decodedChars[i];
                 i++;
-            }
-        }
+            }*/
+
 
         return line;
     }
@@ -207,21 +236,6 @@ public class MemoryMapInputStream {
 
     boolean endofstream() {
         return this.EOF;
-    }
-
-    /**
-     * Remove the first line of the temporary next line.
-     */
-    private void flushTmpNextLine() {
-        // first '\n' doesn't matter
-        int first = tmpNextLine.indexOf('\n');
-
-        // look for the second '\n' from the first + 1 index
-        int second = tmpNextLine.indexOf('\n', first + 1);
-
-        // take the string from the second '\n' (skip the line)
-        tmpNextLine = tmpNextLine.substring(second);
-
     }
 
     int getFileSize() {

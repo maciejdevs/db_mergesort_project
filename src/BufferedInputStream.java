@@ -9,6 +9,9 @@ public class BufferedInputStream {
     private int size;
     private char[] buffer;
     private String tmpNextLine;
+    private int currentBufferIndex;
+    private boolean skipLeftEndLine;
+    private int nbChars;
 
     private static int DEFAULT_CHAR_BUFFER_SIZE = 8192; // Default buffer size for the buffered reader
 
@@ -20,6 +23,9 @@ public class BufferedInputStream {
         this.br = null;
         this.size = DEFAULT_CHAR_BUFFER_SIZE;
         this.tmpNextLine = "";
+        this.currentBufferIndex = 0;
+        this.skipLeftEndLine = false;
+        this.nbChars = 0;
     }
 
     public BufferedInputStream(String path, int size) {
@@ -38,106 +44,66 @@ public class BufferedInputStream {
         }
     }
 
+
     String readln() throws IOException {
         if (size == DEFAULT_CHAR_BUFFER_SIZE) {
-            return br.readLine() + "\n";
+            return br.readLine();
         } else {
-            String line = "";
+            String line = null;
+            boolean eol = false;
+            char lastChar = ' ';
 
-            // Check if the tmp_next_line contains the entire next line. We should treat this case separately.
-            if (BufferUtils.containsNextLine(tmpNextLine)) {
-                line = handleNextLineFromTmpString(line);
-            } else {
-                line = handleNextLineFromBuffer(line);
+            if (currentBufferIndex < size && skipLeftEndLine && buffer[currentBufferIndex] == '\n')
+                currentBufferIndex++;
+
+            if (currentBufferIndex >= size)
+                currentBufferIndex = 0;
+
+            if (currentBufferIndex == 0)
+                nbChars = fileReader.read(this.buffer);
+
+            // Init only if the line exists (the stream hasn't ended yet)
+            // We need to return null when we the end of stream was reached
+            if (nbChars != -1 && currentBufferIndex < size && !eol) {
+                line = "";
+            }
+
+            while (nbChars != -1 && currentBufferIndex < size && !eol) {
+                while (currentBufferIndex < nbChars) {
+                    lastChar = buffer[currentBufferIndex];
+                    if (buffer[currentBufferIndex] == '\r' || buffer[currentBufferIndex] == '\n') {
+                        eol = true;
+                        break;
+                    } else {
+                        line += lastChar;
+                    }
+
+                    currentBufferIndex++;
+                }
+
+                if (!eol) {
+                    flushBuffer();
+                    currentBufferIndex = 0;
+                    nbChars = fileReader.read(this.buffer);
+                } else {
+                    currentBufferIndex++;
+                    if (lastChar == '\r') {
+                        skipLeftEndLine = true;
+                    }
+                }
             }
 
             return line;
         }
     }
 
-    private String handleNextLineFromBuffer(String line) throws IOException {
-        int nbChars = fileReader.read(this.buffer);
-
-        // Continue reading until the buffer contains an end of line
-        while (!containsEndLine(this.buffer) && nbChars >= size) {
-            line += String.valueOf(this.buffer);
-            flushBuffer();
-            nbChars = fileReader.read(this.buffer);
-        }
-
-        // Add every character from the buffer before the first encountered end of line
-        int i = 0;
-        while (nbChars != -1 && i < nbChars && buffer[i] != '\n') {
-            line += buffer[i];
-            i++;
-        }
-
-        // Concat the line with the temporary next line from the previous reading.
-        line = tmpNextLine + line;
-        tmpNextLine = "";
-
-        // Everything that wasn't read from the buffer is saved in the temporary next line, so it won't be lost.
-        while (i < nbChars) {
-            tmpNextLine += buffer[i];
-            i++;
-        }
-
-        flushBuffer();
-        return line;
-    }
-
-    private String handleNextLineFromTmpString(String line) {
-        int i = 1; // skip the first '\n' which is useless in this case
-        int nbChars = tmpNextLine.length();
-
-        while (i < nbChars && tmpNextLine.charAt(i) != '\n') {
-            line += tmpNextLine.charAt(i);
-            i++;
-        }
-
-        flushTmpNextLine();
-        return line;
-    }
-
-    private boolean containsEndLine(char[] buffer) {
-        boolean ok = false;
-
-        for (int i = 0; i < buffer.length; i++) {
-            if (buffer[i] == '\n') {
-                ok = true;
-                break;
-            }
-        }
-
-        return ok;
-    }
-
     private void flushBuffer() {
         this.buffer = new char[this.size];
-    }
-
-    /**
-     * Remove the first line of the temporary next line.
-     */
-    private void flushTmpNextLine() {
-        // first '\n' doesn't matter
-        int first = tmpNextLine.indexOf('\n');
-
-        // look for the second '\n' from the first + 1 index
-        int second = tmpNextLine.indexOf('\n', first + 1);
-
-        // take the string from the second '\n' (skip the line)
-        tmpNextLine = tmpNextLine.substring(second);
     }
 
     void seek(int pos, boolean absolute) throws IOException {
         if (size == DEFAULT_CHAR_BUFFER_SIZE) {
             if (absolute) {
-//                FileReader tmp_fileReader = new FileReader(file);
-//                BufferedReader tmp_bufferedReader = new BufferedReader(tmp_fileReader);
-//                tmp_bufferedReader.skip(pos);
-//                this.br = tmp_bufferedReader;
-
                 br.reset();
                 br.skip(pos);
             } else {
@@ -149,6 +115,7 @@ public class BufferedInputStream {
                 tmp_fileReader.skip(pos);
                 fileReader = tmp_fileReader;
                 tmpNextLine = "";
+                currentBufferIndex = 0;
             } else {
                 fileReader.skip(pos);
 //                tmpNextLine = "";
@@ -158,14 +125,22 @@ public class BufferedInputStream {
     }
 
     boolean endofstream() throws IOException {
-        br.mark(1);
+        br.mark(currentBufferIndex);
         int byte1 = 0;
+
         if (size == DEFAULT_CHAR_BUFFER_SIZE) {
             byte1 = br.read();
+            br.reset();
         } else {
+            // TODO: repair this function
+            PeekReader peekReader = new PeekReader(fileReader);
+
             byte1 = fileReader.read();
+            PushbackReader pushback = new PushbackReader(fileReader);
+            byte1 = pushback.read();
+            char test = (char) byte1;
+            pushback.unread(byte1);
         }
-        br.reset();
 
         return byte1 == -1;
     }
