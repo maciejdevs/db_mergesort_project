@@ -40,32 +40,27 @@ public class SequentialReading {
         System.out.println("\nSum: " + sum);
     }
 
-    public void length3() throws IOException {
+    public void length3(int bufferSize) throws IOException {
         int sum = 0;
-        int counter = 0;
-        BufferedInputStream is = new BufferedInputStream(path, 256);
+        BufferedInputStream is = new BufferedInputStream(path, bufferSize);
         is.open();
         String line;
 
         while ((line = is.readln()) != null) {
             sum += line.length();
-//            System.out.println(line);
         }
 
         System.out.println("\nSum: " + sum);
     }
 
-    public void length4() throws IOException {
+    public void length4(int bufferSize) throws IOException {
         int sum = 0;
-        int counter = 0;
-        MemoryMapInputStream is = new MemoryMapInputStream(path, 10000);
+        MemoryMapInputStream is = new MemoryMapInputStream(path, bufferSize);
         is.open();
         String line;
 
         while ((line = is.readln()) != null) {
-//            System.out.print(line);
             sum += line.length();
-//            System.out.println(counter++);
         }
 
         System.out.println("\nSum: " + sum);

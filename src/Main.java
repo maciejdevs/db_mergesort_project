@@ -78,10 +78,10 @@ public class Main {
 //            os.close();
 
 //            long startTime = System.currentTimeMillis();
-//
+////
 ////            SequentialReading sequentialReading = new SequentialReading("src/imdb/test.csv");
-//            SequentialReading sequentialReading = new SequentialReading("src/imdb/movie_link.csv");
-//            sequentialReading.length4();
+//            SequentialReading sequentialReading = new SequentialReading("src/imdb/movie_companies.csv");
+//            sequentialReading.length4(8192);
 //
 ////            RandomReading randomReading = new RandomReading("src/imdb/company_name.csv", 100);
 ////            randomReading.randJump3();
@@ -92,10 +92,23 @@ public class Main {
 //            System.out.println(elapsedTimeInSecond);
 
             List<String> files = Arrays.asList(
-                    "src/imdb/aka_title.csv"
+                    "src/imdb/link_type.csv",
+                    "src/imdb/cast_info.csv"
+//                    "src/imdb/complete_cast.csv"
             );
 
-            BufferUtils.measureTimeFor(files, 2, null, true);
+            List<Integer> bufferSizes = Arrays.asList(
+                    128, 2048
+            );
+
+            // Test implement 1 random
+//            BufferUtils.measureTimeFor(files, 1, null, false);
+
+            // Test implement 2 random
+//            BufferUtils.measureTimeFor(files, 2,null, false);
+
+            // Test implement 3 random
+            BufferUtils.measureTimeFor(files, 4, bufferSizes, false);
 
         }  catch (Exception e) {
             e.printStackTrace();
