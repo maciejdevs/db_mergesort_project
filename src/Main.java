@@ -1,3 +1,7 @@
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 public class Main {
@@ -73,19 +77,25 @@ public class Main {
 //
 //            os.close();
 
-            long startTime = System.currentTimeMillis();
+//            long startTime = System.currentTimeMillis();
+//
+////            SequentialReading sequentialReading = new SequentialReading("src/imdb/test.csv");
+//            SequentialReading sequentialReading = new SequentialReading("src/imdb/movie_link.csv");
+//            sequentialReading.length4();
+//
+////            RandomReading randomReading = new RandomReading("src/imdb/company_name.csv", 100);
+////            randomReading.randJump3();
+//
+//            long stopTime = System.currentTimeMillis();
+//            long elapsedTime = stopTime - startTime;
+//            double elapsedTimeInSecond = (double) elapsedTime / 1000;
+//            System.out.println(elapsedTimeInSecond);
 
-//            SequentialReading sequentialReading = new SequentialReading("src/imdb/test.csv");
-            SequentialReading sequentialReading = new SequentialReading("src/imdb/movie_companies.csv");
-            sequentialReading.length4();
+            List<String> files = Arrays.asList(
+                    "src/imdb/aka_title.csv"
+            );
 
-//            RandomReading randomReading = new RandomReading("src/imdb/company_name.csv", 100);
-//            randomReading.randJump3();
-
-            long stopTime = System.currentTimeMillis();
-            long elapsedTime = stopTime - startTime;
-            double elapsedTimeInSecond = (double) elapsedTime / 1000;
-            System.out.println(elapsedTimeInSecond);
+            BufferUtils.measureTimeFor(files, 2, null, true);
 
         }  catch (Exception e) {
             e.printStackTrace();

@@ -58,6 +58,7 @@ public class MemoryMapInputStream {
                 buffSize = (int) (fileSize - offset);
             }
 
+
             mapBuff = fileChannel.map(FileChannel.MapMode.READ_ONLY, this.offset, this.buffSize);
             bytesLeft -= buffSize;
             offset += buffSize;

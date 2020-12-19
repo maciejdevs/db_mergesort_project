@@ -19,7 +19,7 @@ public class SequentialReading {
         while (!is.endofstream()) {
             line = is.readln();
             sum += line.length();
-            System.out.println(counter++);
+//            System.out.println(counter++);
         }
 
         System.out.println("\nSum: " + sum);
@@ -30,10 +30,9 @@ public class SequentialReading {
         int counter = 0;
         BufferedInputStream is = new BufferedInputStream(path);
         is.open();
-        String line = "";
+        String line = null;
 
-        while (!is.endofstream()) {
-            line = is.readln();
+        while ((line = is.readln()) != null) {
             sum += line.length();
 //            System.out.println(counter++);
         }
@@ -44,7 +43,7 @@ public class SequentialReading {
     public void length3() throws IOException {
         int sum = 0;
         int counter = 0;
-        BufferedInputStream is = new BufferedInputStream(path, 1000);
+        BufferedInputStream is = new BufferedInputStream(path, 256);
         is.open();
         String line;
 
@@ -59,7 +58,7 @@ public class SequentialReading {
     public void length4() throws IOException {
         int sum = 0;
         int counter = 0;
-        MemoryMapInputStream is = new MemoryMapInputStream(path, 1000);
+        MemoryMapInputStream is = new MemoryMapInputStream(path, 10000);
         is.open();
         String line;
 
