@@ -160,18 +160,21 @@ public class Main {
 //            BufferUtils.measureTimeFor(files, 3, bufferSizes, false);
 
 //            BufferUtils.measureTimeFor(files, 4, bufferSizes, false);
+//
+//            List<String> files = Arrays.asList(
+//                    "src/file.txt",
+//                    "src/f1.txt"
+//            );
+//
+//            List<Integer> bufferSizes = Arrays.asList(
+//                    8191
+//            );
+//
+//            Rrmerge rrmerge = new Rrmerge(files, bufferSizes);
+//            rrmerge.rrmerge_mmap_byte();
 
-            List<String> files = Arrays.asList(
-                    "src/file.txt",
-                    "src/f1.txt"
-            );
-
-            List<Integer> bufferSizes = Arrays.asList(
-                    8191
-            );
-
-            Rrmerge rrmerge = new Rrmerge(files, bufferSizes);
-            rrmerge.rrmerge_mmap_byte();
+            ExtSort extSort = new ExtSort("src/file.txt",1,20,0);
+            extSort.mergesort();
 
 
         }  catch (Exception e) {
