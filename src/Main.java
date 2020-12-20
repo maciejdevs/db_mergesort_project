@@ -173,7 +173,7 @@ public class Main {
 //            Rrmerge rrmerge = new Rrmerge(files, bufferSizes);
 //            rrmerge.rrmerge_mmap_byte();
 
-            ExtSort extSort = new ExtSort("src/file.txt",1,20,0);
+            ExtSort extSort = new ExtSort("src/imdb/aka_title.csv",1,2048,2);
             extSort.mergesort();
 
 

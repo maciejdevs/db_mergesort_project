@@ -148,4 +148,8 @@ public class BufferedInputStream {
     int getFileSize() {
         return (int) file.length();
     }
+
+    void deleteFile(){
+        this.file.delete();
+    }
 }

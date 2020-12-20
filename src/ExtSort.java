@@ -11,6 +11,7 @@ public class ExtSort {
     private BufferedInputStream is;
     private BufferedOutputStream os;
     private List<BufferedInputStream> queue;
+    private int temp_file_index;
 
     public ExtSort(String f, int k, int M, int d){
         this.f = f;
@@ -21,6 +22,7 @@ public class ExtSort {
         this.is = new BufferedInputStream(f);
         this.os = null;
         this.queue = new ArrayList<>();
+        temp_file_index = 0;
     }
 
 
@@ -28,7 +30,6 @@ public class ExtSort {
         String tmp = "";
         int buff_bytes_read = 0;
         int bytes_read = 0;
-        int i = 0;
 
         is.open();
 
@@ -36,17 +37,17 @@ public class ExtSort {
             while (tmp != null && buff_bytes_read < M) {
                 tmp = is.readln();
                 if (tmp != null) {
-                    buff_bytes_read += tmp.length();
-                    buffer.add(tmp);
+                    buff_bytes_read += tmp.length() + 2; // readLn does not read \n and \r, we have to increment the counter by ourselves
+                    buffer.add(tmp + "\n");
                 }
             }
             bytes_read += buff_bytes_read;
             buff_bytes_read = 0;
 
-            sort();
+            this.buffer = sort(this.buffer);
 
-            os = new BufferedOutputStream("src/tmp/temp"+ i +".txt");
-            queue.add(new BufferedInputStream("src/tmp/temp"+ i +".txt"));
+            os = new BufferedOutputStream("src/tmp/temp"+ temp_file_index +".csv");
+            queue.add(new BufferedInputStream("src/tmp/temp"+ temp_file_index +".csv"));
             os.create();
 
             for (String line : buffer) {
@@ -54,12 +55,85 @@ public class ExtSort {
             }
 
             os.close();
-            i++;
+            buffer.clear();
+            temp_file_index++;
         }
+
+        sortQueue();
 
     }
 
-    void sort(){
+    void sortQueue() throws IOException {
+        String line = "";
+        List<String> all_lines = new ArrayList<>();
+        BufferedInputStream is_tmp;
+
+        while(queue.size() > 1) {
+            if(queue.size() >= d) {
+                for (int i = 0; i < d; i++) {
+                    is_tmp = queue.get(i);
+                    is_tmp.open();
+                    while ((line = is_tmp.readln()) != null) {
+                        all_lines.add(line);
+                    }
+                }
+
+                for (int i = 0; i < d; i++) {
+                    queue.remove(0);
+                }
+
+            } else {
+                for(int i = 0; i < queue.size(); i++){
+                    is_tmp = queue.get(i);
+                    while ((line = is_tmp.readln()) != null) {
+                        all_lines.add(line);
+                    }
+                }
+
+                for (int i = 0; i < queue.size(); i++) {
+                    queue.remove(0);
+                }
+            }
+
+            all_lines = sort(all_lines);
+
+            os = new BufferedOutputStream("src/tmp/temp" + temp_file_index + ".csv");
+            queue.add(new BufferedInputStream("src/tmp/temp" + temp_file_index + ".csv"));
+            os.create();
+
+            for (String tmp_line : all_lines) {
+                os.writeln(tmp_line + "\n");
+            }
+
+            os.close();
+            all_lines.clear();
+            temp_file_index++;
+        }
+
+        os = new BufferedOutputStream("src/tmp/output.csv");
+        os.create();
+
+        String tmp_line2 = "";
+        BufferedInputStream tmp_is = queue.get(0);
+        tmp_is.open();
+        while((tmp_line2 = tmp_is.readln()) != null){
+            all_lines.add(tmp_line2);
+        }
+
+        for (String tmp_line : all_lines) {
+            os.writeln(tmp_line + "\n");
+        }
+
+        os.close();
+
+        deleteTmp();
+    }
+
+    void deleteTmp(){
+        //TODO
+    }
+
+    List<String> sort(List<String> buffer){
         //String[] cols = buffer.get(0).split(",");
 
         List<String[] > cols = new ArrayList<>();
@@ -78,7 +152,6 @@ public class ExtSort {
         List<String> tmp_buffer = new ArrayList<>();
 
         for(Map.Entry entry : tmp_sort.entrySet()) {
-            String variable = (String) entry.getKey();
             int line = (int) entry.getValue();
             tmp = buffer.get(line);
             tmp_buffer.add(tmp);
@@ -87,6 +160,7 @@ public class ExtSort {
         buffer.clear();
         buffer.addAll(tmp_buffer);
 
+        return buffer;
     }
 
 }
