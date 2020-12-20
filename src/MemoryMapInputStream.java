@@ -127,8 +127,12 @@ public class MemoryMapInputStream {
                 String tmp = "";
 
                 // End of stream reached
-                if (!allocateMemory())
-                    break;
+                if (!allocateMemory()) {
+                    if(line.charAt(line.length() - 1) != '\n') {
+                        line += '\n';
+                        break;
+                    }
+                }
 
                 tmp = readMemoryLine();
                 line += tmp;
@@ -168,7 +172,13 @@ public class MemoryMapInputStream {
                 line += decodedChar;
         } while (mapBuff.remaining() > 0 && decodedChar != '\r' && decodedChar != '\n');
 
-        if (decodedChar == '\r' || decodedChar == '\n') {
+        if (decodedChar == '\r') {
+            line += '\n';
+            positionInMapBuff++;
+            mapBuff.get();
+        }
+
+        if(decodedChar == '\n') {
             line += '\n';
         }
 

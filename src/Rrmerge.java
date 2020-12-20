@@ -103,7 +103,7 @@ public class Rrmerge {
     private void round_robin_mmap(CustomOutputStream outputStream) throws IOException {
         List<MemoryMapInputStream> buffer_streams = new ArrayList<>();
         MemoryMapInputStream tmp = null;
-        String line = "";
+        String line = null;
         int cpt = f.size();
 
 
