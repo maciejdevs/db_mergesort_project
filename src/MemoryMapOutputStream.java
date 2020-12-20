@@ -10,7 +10,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.EnumSet;
 
-public class MemoryMapOutputStream {
+public class MemoryMapOutputStream implements CustomOutputStream{
     private File file;
     private String path;
     private int buffSize;
@@ -23,6 +23,11 @@ public class MemoryMapOutputStream {
         this.path = path;
         this.buffSize = 0;
         this.offset = 0;
+    }
+
+    public MemoryMapOutputStream(String path, int buffSize) {
+        this(path);
+        this.buffSize = buffSize;
     }
 
     void create() throws IOException {
@@ -41,14 +46,16 @@ public class MemoryMapOutputStream {
         this.offset += this.buffSize;
     }
 
-    void writeln(String line) throws IOException {
+    @Override
+    public void writeln(String line) throws IOException {
         this.allocateMemory(line);
         CharBuffer charBuff = CharBuffer.wrap(line);
         this.mapBuff.put(Charset.forName("utf-8").encode(charBuff));
         this.mapBuff.clear();
     }
 
-    void close() throws IOException {
+    @Override
+    public void close() throws IOException {
         this.mapBuff.clear();
         this.fileChannel.close();
     }

@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ByteOutputStream {
+public class ByteOutputStream implements CustomOutputStream{
 
     private File file;
     private String path;
@@ -22,13 +22,15 @@ public class ByteOutputStream {
         this.file.createNewFile();
     }
 
-    void writeln(String line) throws IOException {
+    @Override
+    public void writeln(String line) throws IOException {
         for (char c : line.toCharArray()) {
             fileWriter.write(c);
         }
     }
 
-    void close() throws IOException {
+    @Override
+    public void close() throws IOException {
         fileWriter.close();
     }
 }

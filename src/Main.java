@@ -103,30 +103,30 @@ public class Main {
 //                    "src/imdb/complete_cast.csv"
 //            );
 
-                        List<String> files = Arrays.asList(
-                    "src/imdb/comp_cast_type.csv",
-                    "src/imdb/kind_type.csv",
-                    "src/imdb/company_type.csv",
-                    "src/imdb/role_type.csv",
-                    "src/imdb/link_type.csv",
-                    "src/imdb/info_type.csv",
-                    "src/imdb/company_name_short.csv",
-                    "src/imdb/movie_link.csv",
-                    "src/imdb/complete_cast.csv",
-                    "src/imdb/keyword.csv",
-                    "src/imdb/company_name.csv",
-                    "src/imdb/movie_info_idx.csv",
-                    "src/imdb/aka_title.csv",
-                    "src/imdb/aka_name.csv",
-                    "src/imdb/movie_companies.csv",
-                    "src/imdb/movie_keyword.csv",
-                    "src/imdb/title.csv",
-                    "src/imdb/char_name.csv",
-                    "src/imdb/name.csv",
-                    "src/imdb/person_info.csv",
-                    "src/imdb/movie_info.csv",
-                    "src/imdb/cast_info.csv"
-            );
+//            List<String> files = Arrays.asList(
+//                    "src/imdb/comp_cast_type.csv",
+//                    "src/imdb/kind_type.csv",
+//                    "src/imdb/company_type.csv",
+//                    "src/imdb/role_type.csv",
+//                    "src/imdb/link_type.csv",
+//                    "src/imdb/info_type.csv",
+//                    "src/imdb/company_name_short.csv",
+//                    "src/imdb/movie_link.csv",
+//                    "src/imdb/complete_cast.csv",
+//                    "src/imdb/keyword.csv",
+//                    "src/imdb/company_name.csv",
+//                    "src/imdb/movie_info_idx.csv",
+//                    "src/imdb/aka_title.csv",
+//                    "src/imdb/aka_name.csv",
+//                    "src/imdb/movie_companies.csv",
+//                    "src/imdb/movie_keyword.csv",
+//                    "src/imdb/title.csv",
+//                    "src/imdb/char_name.csv",
+//                    "src/imdb/name.csv",
+//                    "src/imdb/person_info.csv",
+//                    "src/imdb/movie_info.csv",
+//                    "src/imdb/cast_info.csv"
+//            );
 
 //            List<String> files = Arrays.asList(
 //                    "src/imdb/company_type.csv",
@@ -134,9 +134,9 @@ public class Main {
 //                    "src/imdb/name.csv"
 //            );
 
-            List<Integer> bufferSizes = Arrays.asList(
-                    8191
-            );
+//            List<Integer> bufferSizes = Arrays.asList(
+//                    8191
+//            );
 
 //             Test implement 1 sequential
 //            BufferUtils.measureTimeFor(files, 1, null, true);
@@ -159,7 +159,20 @@ public class Main {
             // Test implement 3 random
 //            BufferUtils.measureTimeFor(files, 3, bufferSizes, false);
 
-            BufferUtils.measureTimeFor(files, 4, bufferSizes, false);
+//            BufferUtils.measureTimeFor(files, 4, bufferSizes, false);
+
+            List<String> files = Arrays.asList(
+                    "src/file.txt",
+                    "src/f1.txt"
+            );
+
+            List<Integer> bufferSizes = Arrays.asList(
+                    8191
+            );
+
+            Rrmerge rrmerge = new Rrmerge(files, bufferSizes);
+            rrmerge.rrmerge_mmap_byte();
+
 
         }  catch (Exception e) {
             e.printStackTrace();

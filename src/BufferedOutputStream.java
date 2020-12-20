@@ -3,7 +3,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-public class BufferedOutputStream {
+public class BufferedOutputStream implements CustomOutputStream{
     private File file;
     private String path;
     private FileWriter fileWriter;
@@ -34,7 +34,8 @@ public class BufferedOutputStream {
         this.bw = new BufferedWriter(fileWriter);
     }
 
-    void writeln(String line) throws IOException {
+    @Override
+    public void writeln(String line) throws IOException {
         if(line.equals("")) {
             return;
         } else if(size == DEFAULT_CHAR_BUFFER_SIZE) {
@@ -70,7 +71,8 @@ public class BufferedOutputStream {
         }
     }
 
-    void close() throws IOException {
+    @Override
+    public void close() throws IOException {
         bw.close();
         flushBuffer();
     }
