@@ -31,47 +31,52 @@ public class RandomReading {
         int sum = 0;
         int p = 0;
         int l = 0;
+        String line = "";
         BufferedInputStream is = new BufferedInputStream(path);
         is.open();
 
         for (int i = 0; i < j; i++) {
             p = (int) (Math.random() * is.getFileSize());
             is.seek(p, true);
-            l = is.readln().length();
-            sum += l;
+            if ((line = is.readln()) != null) {
+                l = line.length();
+                sum += l;
+            }
         }
 
         System.out.println("Sum: " + sum);
     }
 
-    void randJump3() throws IOException {
+    void randJump3(int bufferSize) throws IOException {
         int sum = 0;
         int p = 0;
         int l = 0;
-        BufferedInputStream is = new BufferedInputStream(path, 8191);
+        String line = "";
+        BufferedInputStream is = new BufferedInputStream(path, bufferSize);
         is.open();
 
         for (int i = 0; i < j; i++) {
-            p = 14;
+            p = (int) (Math.random() * is.getFileSize());
             is.seek(p, true);
-            String y = is.readln();
-            l = y.length();
-            sum += l;
+            if ((line = is.readln()) != null) {
+                l = line.length();
+                sum += l;
+            }
         }
 
         System.out.println("Sum: " + sum);
     }
 
-    void randJump4() throws IOException {
+    void randJump4(int bufferSize) throws IOException {
         int sum = 0;
         int p = 0;
         int l = 0;
-        MemoryMapInputStream is = new MemoryMapInputStream(path, 10);
+        MemoryMapInputStream is = new MemoryMapInputStream(path, bufferSize);
         is.open();
 
         for (int i = 0; i < j; i++) {
 //            p = (int) (Math.random() * is.getFileSize());
-            p = 2;
+            p = (int) (Math.random() * is.getFileSize());
             is.seek(p, true);
             l = is.readln().length();
 //            System.out.println(i);

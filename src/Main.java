@@ -91,15 +91,64 @@ public class Main {
 //            double elapsedTimeInSecond = (double) elapsedTime / 1000;
 //            System.out.println(elapsedTimeInSecond);
 
-            List<String> files = Arrays.asList(
-                    "src/imdb/link_type.csv",
-                    "src/imdb/cast_info.csv"
+//            List<String> files = Arrays.asList(
+//                    "src/imdb/comp_cast_type.csv",
+//                    "src/imdb/kind_type.csv",
+//                    "src/imdb/company_type.csv",
+//                    "src/imdb/role_type.csv",
+//                    "src/imdb/link_type.csv",
+//                    "src/imdb/info_type.csv",
+//                    "src/imdb/company_name_short.csv",
+//                    "src/imdb/movie_link.csv",
 //                    "src/imdb/complete_cast.csv"
+//            );
+
+                        List<String> files = Arrays.asList(
+                    "src/imdb/comp_cast_type.csv",
+                    "src/imdb/kind_type.csv",
+                    "src/imdb/company_type.csv",
+                    "src/imdb/role_type.csv",
+                    "src/imdb/link_type.csv",
+                    "src/imdb/info_type.csv",
+                    "src/imdb/company_name_short.csv",
+                    "src/imdb/movie_link.csv",
+                    "src/imdb/complete_cast.csv",
+                    "src/imdb/keyword.csv",
+                    "src/imdb/company_name.csv",
+                    "src/imdb/movie_info_idx.csv",
+                    "src/imdb/aka_title.csv",
+                    "src/imdb/aka_name.csv",
+                    "src/imdb/movie_companies.csv",
+                    "src/imdb/movie_keyword.csv",
+                    "src/imdb/title.csv",
+                    "src/imdb/char_name.csv",
+                    "src/imdb/name.csv",
+                    "src/imdb/person_info.csv",
+                    "src/imdb/movie_info.csv",
+                    "src/imdb/cast_info.csv"
             );
 
+//            List<String> files = Arrays.asList(
+//                    "src/imdb/company_type.csv",
+//                    "src/imdb/company_name.csv",
+//                    "src/imdb/name.csv"
+//            );
+
             List<Integer> bufferSizes = Arrays.asList(
-                    128, 2048
+                    8191
             );
+
+//             Test implement 1 sequential
+//            BufferUtils.measureTimeFor(files, 1, null, true);
+
+//             Test implement 2 sequential
+//            BufferUtils.measureTimeFor(files, 2,null, true);
+
+//             Test implement 3 sequential
+//            BufferUtils.measureTimeFor(files, 3, bufferSizes, true);
+
+//             Test implement 4 sequential
+//            BufferUtils.measureTimeFor(files, 4, bufferSizes, true);
 
             // Test implement 1 random
 //            BufferUtils.measureTimeFor(files, 1, null, false);
@@ -108,6 +157,8 @@ public class Main {
 //            BufferUtils.measureTimeFor(files, 2,null, false);
 
             // Test implement 3 random
+//            BufferUtils.measureTimeFor(files, 3, bufferSizes, false);
+
             BufferUtils.measureTimeFor(files, 4, bufferSizes, false);
 
         }  catch (Exception e) {

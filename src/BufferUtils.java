@@ -95,9 +95,9 @@ public abstract class BufferUtils {
                         System.out.println("j value: " + j);
 
                         if (implementationNumber == 3) {
-                            randomReading.randJump3();
+                            randomReading.randJump3(bufferSize);
                         } else if (implementationNumber == 4) {
-                            randomReading.randJump4();
+                            randomReading.randJump4(bufferSize);
                         }
 
                         System.out.println("Buffer size: " + bufferSize);
