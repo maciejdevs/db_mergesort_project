@@ -93,14 +93,15 @@ public class MemoryMapInputStream {
     }
 
     String readln() throws IOException {
-        String line = null;
+        StringBuilder line = null;
 
         if (this.positionInMapBuff >= this.buffSize) {
             if (allocateMemory()) {
-                line = readMemoryLine();
+                line = new StringBuilder(readMemoryLine());
 
                 if (!tmpLine.isEmpty()) {
-                    line = tmpLine + line;
+                    line.insert(0, tmpLine);
+//                    line = tmpLine + line;
                     tmpLine = "";
                 }
 
@@ -111,17 +112,17 @@ public class MemoryMapInputStream {
                         break;
 
                     tmp = readMemoryLine();
-                    line += tmp;
+                    line.append(tmp);
 
                     if (tmp.isEmpty() && line.charAt(line.length() - 1) != '\n') {
-                        line += '\n';
+                        line.append('\n');
                     }
                 }
             } else {
                 this.EOF = true;
             }
         } else {
-            line = readMemoryLine();
+            line = new StringBuilder(readMemoryLine());
 
             while (line.length() > 0 && line.charAt(line.length() - 1) != '\n') {
                 String tmp = "";
@@ -129,29 +130,29 @@ public class MemoryMapInputStream {
                 // End of stream reached
                 if (!allocateMemory()) {
                     if(line.charAt(line.length() - 1) != '\n') {
-                        line += '\n';
+                        line.append('\n');
                         break;
                     }
                 }
 
                 tmp = readMemoryLine();
-                line += tmp;
+                line.append(tmp);
 
                 if (tmp.isEmpty() && line.charAt(line.length() - 1) != '\n') {
-                    line += '\n';
+                    line.append('\n');
                 }
             }
         }
 
-        return line;
+        return line != null ? line.toString() : null;
     }
 
     String readMemoryLine() {
-        String line = "";
+        StringBuilder line = new StringBuilder();
 
         if (mapBuff.remaining() == 0) {
-            line += "\n";
-            return line;
+            line.append("\n");
+            return line.toString();
         }
 
         int i = 0;
@@ -169,20 +170,20 @@ public class MemoryMapInputStream {
             tmp.rewind();
             decodedChar = Charset.forName("UTF-8").decode(tmp).charAt(indexOfCharacter);
             if (decodedChar != '\r' && decodedChar != '\n')
-                line += decodedChar;
+                line.append(decodedChar);
         } while (mapBuff.remaining() > 0 && decodedChar != '\r' && decodedChar != '\n');
 
         if (decodedChar == '\r') {
-            line += '\n';
+            line.append('\n');
             positionInMapBuff++;
             mapBuff.get();
         }
 
         if(decodedChar == '\n') {
-            line += '\n';
+            line.append('\n');
         }
 
-        return line;
+        return line.toString();
     }
 
     void seek(int pos, boolean absolute) throws IOException {

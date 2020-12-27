@@ -1,16 +1,21 @@
 import java.io.IOException;
+import java.util.Random;
 
 public class RandomReading {
 
     private String path;
     private int j;
+    private final static int RAND_SEED = 1234567;
+    private Random random;
 
     public RandomReading(String path, int j) {
         this.path = path;
         this.j = j;
+        random = null;
     }
 
     void randJump1() throws IOException {
+        random = new Random(RAND_SEED);
         int sum = 0;
         int p = 0;
         int l = 0;
@@ -18,7 +23,7 @@ public class RandomReading {
         is.open();
 
         for (int i = 0; i < j; i++) {
-            p = (int) (Math.random() * is.getFileSize());
+            p = random.nextInt(is.getFileSize());
             is.seek(p, true);
             l = is.readln().length();
             sum += l;
@@ -28,6 +33,7 @@ public class RandomReading {
     }
 
     void randJump2() throws IOException {
+        random = new Random(RAND_SEED);
         int sum = 0;
         int p = 0;
         int l = 0;
@@ -36,7 +42,7 @@ public class RandomReading {
         is.open();
 
         for (int i = 0; i < j; i++) {
-            p = (int) (Math.random() * is.getFileSize());
+            p = random.nextInt(is.getFileSize());
             is.seek(p, true);
             if ((line = is.readln()) != null) {
                 l = line.length();
@@ -48,6 +54,7 @@ public class RandomReading {
     }
 
     void randJump3(int bufferSize) throws IOException {
+        random = new Random(RAND_SEED);
         int sum = 0;
         int p = 0;
         int l = 0;
@@ -56,7 +63,7 @@ public class RandomReading {
         is.open();
 
         for (int i = 0; i < j; i++) {
-            p = (int) (Math.random() * is.getFileSize());
+            p = random.nextInt(is.getFileSize());
             is.seek(p, true);
             if ((line = is.readln()) != null) {
                 l = line.length();
@@ -68,6 +75,7 @@ public class RandomReading {
     }
 
     void randJump4(int bufferSize) throws IOException {
+        random = new Random(RAND_SEED);
         int sum = 0;
         int p = 0;
         int l = 0;
@@ -75,8 +83,7 @@ public class RandomReading {
         is.open();
 
         for (int i = 0; i < j; i++) {
-//            p = (int) (Math.random() * is.getFileSize());
-            p = (int) (Math.random() * is.getFileSize());
+            p = random.nextInt(is.getFileSize());
             is.seek(p, true);
             l = is.readln().length();
 //            System.out.println(i);

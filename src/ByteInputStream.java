@@ -31,24 +31,33 @@ public class ByteInputStream {
     }
 
     String readln() throws IOException {
-        String line = "";
+        StringBuilder line = new StringBuilder();
         char temp_char;
 
         do {
             temp_char = (char) fileReader.read();
-            line += temp_char;
+            line.append(temp_char);
             currentPos++;
         } while (temp_char != '\n' && !endofstream());
 
-        return line;
+        return line.toString();
     }
 
     void seek(int pos, boolean absolute) throws IOException {
         if (absolute) {
-            FileReader tmp_fileReader = new FileReader(file);
-            tmp_fileReader.skip(pos);
-            this.fileReader = tmp_fileReader;
-            currentPos = pos;
+//            FileReader tmp_fileReader = new FileReader(file);
+//            tmp_fileReader.skip(pos);
+//            this.fileReader = tmp_fileReader;
+//            currentPos = pos;
+
+            if (pos > currentPos) {
+                fileReader.skip(pos - currentPos);
+            } else {
+                FileReader tmp_fileReader = new FileReader(file);
+                tmp_fileReader.skip(pos);
+                this.fileReader = tmp_fileReader;
+                currentPos = pos;
+            }
         } else {
             fileReader.skip(pos);
             currentPos += pos;

@@ -1,184 +1,115 @@
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Main {
+
+    private final static List<String> allFiles = Arrays.asList(
+            "src/imdb/comp_cast_type.csv",
+            "src/imdb/kind_type.csv",
+            "src/imdb/company_type.csv",
+            "src/imdb/role_type.csv",
+            "src/imdb/link_type.csv",
+            "src/imdb/info_type.csv",
+            "src/imdb/company_name_short.csv",
+            "src/imdb/movie_link.csv",
+            "src/imdb/complete_cast.csv",
+            "src/imdb/keyword.csv",
+            "src/imdb/company_name.csv",
+            "src/imdb/movie_info_idx.csv",
+            "src/imdb/aka_title.csv",
+            "src/imdb/aka_name.csv",
+            "src/imdb/movie_companies.csv",
+            "src/imdb/movie_keyword.csv",
+            "src/imdb/title.csv",
+            "src/imdb/char_name.csv",
+            "src/imdb/name.csv",
+            "src/imdb/person_info.csv",
+            "src/imdb/movie_info.csv",
+            "src/imdb/cast_info.csv"
+    );
+
+//    private final static List<String> allFiles = Arrays.asList(
+//            "src/imdb/comp_cast_type.csv",
+//            "src/imdb/kind_type.csv",
+//            "src/imdb/company_type.csv",
+//            "src/imdb/role_type.csv",
+//            "src/imdb/link_type.csv",
+//            "src/imdb/info_type.csv",
+//            "src/imdb/company_name_short.csv",
+//            "src/imdb/movie_link.csv",
+//            "src/imdb/complete_cast.csv",
+//            "src/imdb/keyword.csv",
+//            "src/imdb/company_name.csv",
+//            "src/imdb/movie_info_idx.csv",
+//            "src/imdb/aka_title.csv",
+//            "src/imdb/aka_name.csv",
+//            "src/imdb/movie_companies.csv",
+//            "src/imdb/movie_keyword.csv",
+//            "src/imdb/title.csv",
+//            "src/imdb/char_name.csv",
+//            "src/imdb/name.csv",
+//            "src/imdb/person_info.csv",
+//            "src/imdb/movie_info.csv",
+//            "src/imdb/cast_info.csv"
+//    );
+
+    private final static List<String> firstImplementFiles = Arrays.asList(
+            "src/imdb/comp_cast_type.csv",
+            "src/imdb/kind_type.csv",
+            "src/imdb/company_type.csv",
+            "src/imdb/role_type.csv",
+            "src/imdb/link_type.csv",
+            "src/imdb/info_type.csv",
+            "src/imdb/company_name_short.csv",
+            "src/imdb/movie_link.csv"
+    );
+
+    private final static List<Integer> bufferSizes = Arrays.asList(
+            64, 2048, 8200, 16384
+    );
+
+
     public static void main(String[] args) {
-
         try {
-//            BufferedInputStream in = new BufferedInputStream("src/file.txt");
-//            in.open();
-//
-//            System.out.println(in.readln());
-//            System.out.println(in.readln());
-//            in.endofstream();
-//            System.out.println(in.readln());
-//
-//            ByteOutputStream os = new ByteOutputStream("src/create.txt");
-//            os.create();
-//
-//            ByteInputStream is = new ByteInputStream("src/file.txt");
-//            is.open();
-//            is.seek(3, true);
-//            os.writeln(is.readln());
-//
-//            os.close();
+            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+            Date date = new Date();
+            System.out.println(formatter.format(date));
 
+            testExperimentReadingSequential();
+            testExperimentReadingRandom();
 
-//            BufferedOutputStream os = new BufferedOutputStream("src/create.txt");
-//            os.create();
-//
-//            BufferedInputStream is = new BufferedInputStream("src/file.txt", 10);
-//            is.open();
-//            System.out.println(is.readln());
-//            System.out.println(is.readln());
-//            System.out.println(is.readln());
-//            os.writeln(is.readln());
-//            os.writeln(is.readln());
-//            is.seek(3,true);
-//            os.writeln(is.readln());
-//            is.seek(5,true);
-//            os.writeln(is.readln());
-
-//            os.close();
-
-
-//            MemoryMapInputStream is = new MemoryMapInputStream("src/file.txt", 3);
-//            is.open();
-//            System.out.print(is.readln());
-//            System.out.print(is.readln());
-//            is.seek(2, true);
-//            System.out.print(is.readln());
-
-//            BufferedInputStream is = new BufferedInputStream("src/file.txt", 10);
-//            MemoryMapInputStream is = new MemoryMapInputStream("src/file.txt", 10);
-//            MemoryMapOutputStream os = new MemoryMapOutputStream("src/create.txt");
-//
-//            is.open();
-//            os.create();
-//
-//            String tmp = is.readln();
-//            System.out.print(tmp);
-//            os.writeln(tmp);
-//
-//            tmp = is.readln();
-//            System.out.print(tmp);
-//            os.writeln(tmp);
-//
-//            tmp = is.readln();
-//            System.out.print(tmp);
-//            os.writeln(tmp);
-//
-//            tmp = is.readln();
-//            System.out.print(tmp);
-//            os.writeln(tmp);
-//
-//            os.close();
-
-//            long startTime = System.currentTimeMillis();
-////
-////            SequentialReading sequentialReading = new SequentialReading("src/imdb/test.csv");
-//            SequentialReading sequentialReading = new SequentialReading("src/imdb/movie_companies.csv");
-//            sequentialReading.length4(8192);
-//
-////            RandomReading randomReading = new RandomReading("src/imdb/company_name.csv", 100);
-////            randomReading.randJump3();
-//
-//            long stopTime = System.currentTimeMillis();
-//            long elapsedTime = stopTime - startTime;
-//            double elapsedTimeInSecond = (double) elapsedTime / 1000;
-//            System.out.println(elapsedTimeInSecond);
-
-//            List<String> files = Arrays.asList(
-//                    "src/imdb/comp_cast_type.csv",
-//                    "src/imdb/kind_type.csv",
-//                    "src/imdb/company_type.csv",
-//                    "src/imdb/role_type.csv",
-//                    "src/imdb/link_type.csv",
-//                    "src/imdb/info_type.csv",
-//                    "src/imdb/company_name_short.csv",
-//                    "src/imdb/movie_link.csv",
-//                    "src/imdb/complete_cast.csv"
-//            );
-
-//            List<String> files = Arrays.asList(
-//                    "src/imdb/comp_cast_type.csv",
-//                    "src/imdb/kind_type.csv",
-//                    "src/imdb/company_type.csv",
-//                    "src/imdb/role_type.csv",
-//                    "src/imdb/link_type.csv",
-//                    "src/imdb/info_type.csv",
-//                    "src/imdb/company_name_short.csv",
-//                    "src/imdb/movie_link.csv",
-//                    "src/imdb/complete_cast.csv",
-//                    "src/imdb/keyword.csv",
-//                    "src/imdb/company_name.csv",
-//                    "src/imdb/movie_info_idx.csv",
-//                    "src/imdb/aka_title.csv",
-//                    "src/imdb/aka_name.csv",
-//                    "src/imdb/movie_companies.csv",
-//                    "src/imdb/movie_keyword.csv",
-//                    "src/imdb/title.csv",
-//                    "src/imdb/char_name.csv",
-//                    "src/imdb/name.csv",
-//                    "src/imdb/person_info.csv",
-//                    "src/imdb/movie_info.csv",
-//                    "src/imdb/cast_info.csv"
-//            );
-
-//            List<String> files = Arrays.asList(
-//                    "src/imdb/company_type.csv",
-//                    "src/imdb/company_name.csv",
-//                    "src/imdb/name.csv"
-//            );
-
-//            List<Integer> bufferSizes = Arrays.asList(
-//                    8191
-//            );
-
-//             Test implement 1 sequential
-//            BufferUtils.measureTimeFor(files, 1, null, true);
-
-//             Test implement 2 sequential
-//            BufferUtils.measureTimeFor(files, 2,null, true);
-
-//             Test implement 3 sequential
-//            BufferUtils.measureTimeFor(files, 3, bufferSizes, true);
-
-//             Test implement 4 sequential
-//            BufferUtils.measureTimeFor(files, 4, bufferSizes, true);
-
-            // Test implement 1 random
-//            BufferUtils.measureTimeFor(files, 1, null, false);
-
-            // Test implement 2 random
-//            BufferUtils.measureTimeFor(files, 2,null, false);
-
-            // Test implement 3 random
-//            BufferUtils.measureTimeFor(files, 3, bufferSizes, false);
-
-//            BufferUtils.measureTimeFor(files, 4, bufferSizes, false);
-//
-//            List<String> files = Arrays.asList(
-//                    "src/file.txt",
-//                    "src/f1.txt"
-//            );
-//
-//            List<Integer> bufferSizes = Arrays.asList(
-//                    8191
-//            );
-//
-//            Rrmerge rrmerge = new Rrmerge(files, bufferSizes);
-//            rrmerge.rrmerge_mmap_byte();
-
-            ExtSort extSort = new ExtSort("src/imdb/aka_title.csv",1,2048,2);
-            extSort.mergesort();
-
-
-        }  catch (Exception e) {
+            date = new Date();
+            System.out.println(formatter.format(date));
+        } catch (
+                Exception e) {
             e.printStackTrace();
         }
     }
+
+    private static void testExperimentReadingSequential() throws IOException {
+        BufferUtils.measureTimeFor(firstImplementFiles, 1, null, true);
+        BufferUtils.measureTimeFor(allFiles, 2, null, true);
+        BufferUtils.measureTimeFor(allFiles, 3, bufferSizes, true);
+        BufferUtils.measureTimeFor(allFiles, 4, bufferSizes, true);
+    }
+
+    private static void testExperimentReadingRandom() throws IOException {
+        BufferUtils.measureTimeFor(firstImplementFiles, 1, null, false);
+        BufferUtils.measureTimeFor(allFiles, 2, null, false);
+        BufferUtils.measureTimeFor(allFiles, 3, bufferSizes, false);
+        BufferUtils.measureTimeFor(allFiles, 4, bufferSizes, false);
+    }
+
+    private static void testExperimentCombinedReadWrite() throws IOException {
+        BufferUtils.measureTimeFor(allFiles, 1, null, false);
+        BufferUtils.measureTimeFor(allFiles, 2, null, false);
+        BufferUtils.measureTimeFor(allFiles, 3, bufferSizes, false);
+        BufferUtils.measureTimeFor(allFiles, 4, bufferSizes, false);
+    }
+
 }

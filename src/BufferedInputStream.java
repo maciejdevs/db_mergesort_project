@@ -49,7 +49,7 @@ public class BufferedInputStream {
         if (size == DEFAULT_CHAR_BUFFER_SIZE) {
             return br.readLine();
         } else {
-            String line = null;
+            StringBuilder line = null;
             boolean eol = false;
             char lastChar = ' ';
 
@@ -65,7 +65,7 @@ public class BufferedInputStream {
             // Init only if the line exists (the stream hasn't ended yet)
             // We need to return null when we the end of stream was reached
             if (nbChars != -1 && currentBufferIndex < size && !eol) {
-                line = "";
+                line = new StringBuilder();
             }
 
             while (nbChars != -1 && currentBufferIndex < size && !eol) {
@@ -75,7 +75,7 @@ public class BufferedInputStream {
                         eol = true;
                         break;
                     } else {
-                        line += lastChar;
+                        line.append(lastChar);
                     }
 
                     currentBufferIndex++;
@@ -93,7 +93,7 @@ public class BufferedInputStream {
                 }
             }
 
-            return line;
+            return line != null ? line.toString() : null;
         }
     }
 
