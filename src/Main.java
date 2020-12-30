@@ -1,6 +1,10 @@
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.sql.SQLOutput;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -73,6 +77,23 @@ public class Main {
             64, 2048, 8200, 16384
     );
 
+    private final static List<String> mergeSortTestFiles = Arrays.asList(
+            //"src/imdb/char_name.csv",
+            "src/imdb/aka_title.csv",
+            "src/imdb/keyword.csv",
+            "src/imdb/movie_link.csv"
+    );
+
+    private final static List<Integer> mergeSortBufferSizes = Arrays.asList(
+           2048, 8192, 16384, 65536
+    );
+
+    private final static List<Integer> mergeSortStreams = Arrays.asList(
+            8, 12, 16, 18, 20
+    );
+
+
+
 
     public static void main(String[] args) {
         try {
@@ -80,8 +101,10 @@ public class Main {
             Date date = new Date();
             System.out.println(formatter.format(date));
 
-            testExperimentReadingSequential();
-            testExperimentReadingRandom();
+            //testExperimentReadingSequential();
+            //testExperimentReadingRandom();
+
+            testExperimentMergeSort();
 
             date = new Date();
             System.out.println(formatter.format(date));
@@ -89,6 +112,52 @@ public class Main {
                 Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private static void testExperimentMergeSort() throws IOException {
+        long start;
+        long finish;
+        long timeElapsed;
+
+        int totalTime = 0;
+        double averageTime = 0;
+        String results = "";
+
+        for(String f : mergeSortTestFiles){
+            for(int M : mergeSortBufferSizes){
+                for(int d : mergeSortStreams){
+                    for(int i = 0; i < 10; i++) {
+                        start = System.currentTimeMillis();
+
+                        ExtSort extSort = new ExtSort(f, 1, M, d);
+                        extSort.mergesort();
+
+                        finish = System.currentTimeMillis();
+                        timeElapsed = finish - start;
+                        totalTime += timeElapsed;
+
+                        System.out.println("f : " + f);
+                        System.out.println("M : " + M);
+                        System.out.println("d : " + d);
+                        System.out.println("Elapsed time : " + timeElapsed + " ms");
+                        extSort.deleteTmp();
+                    }
+                    averageTime = totalTime / 10;
+                    totalTime = 0;
+                    results += "File : " + f + " \n";
+                    results += "File size " + Files.size(Paths.get(f)) + " \n";
+                    results += "Buffer Size : " + M + "\n";
+                    results += "Merge streams : " + d + "\n";
+                    results += "Average Time : " + averageTime + " ms \n";
+                    results += " ----------------------------------------- \n \n";
+                }
+            }
+        }
+
+        File file = new File("src/results.txt");
+        FileWriter fw = new FileWriter(file);
+        fw.write(results);
+        fw.close();
     }
 
     private static void testExperimentReadingSequential() throws IOException {
