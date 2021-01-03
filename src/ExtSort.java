@@ -1,3 +1,4 @@
+import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
@@ -46,6 +47,8 @@ public class ExtSort {
 
             this.buffer = sort(this.buffer);
 
+            //System.out.println("Bytes read : " + bytes_read + " | File Size : " + is.getFileSize());
+
             os = new BufferedOutputStream("src/tmp/temp"+ temp_file_index +".csv");
             queue.add(new BufferedInputStream("src/tmp/temp"+ temp_file_index +".csv"));
             os.create();
@@ -85,12 +88,13 @@ public class ExtSort {
             } else {
                 for(int i = 0; i < queue.size(); i++){
                     is_tmp = queue.get(i);
+                    is_tmp.open();
                     while ((line = is_tmp.readln()) != null) {
                         all_lines.add(line);
                     }
                 }
 
-                for (int i = 0; i < queue.size(); i++) {
+                for (int i = 0; i < queue.size() + 1; i++) {
                     queue.remove(0);
                 }
             }
@@ -125,12 +129,13 @@ public class ExtSort {
         }
 
         os.close();
-
-        deleteTmp();
     }
 
     void deleteTmp(){
-        //TODO
+        for(int i = 0; i <= temp_file_index; i++) {
+            File file = new File("src/tmp/temp" + temp_file_index + ".csv");
+            file.delete();
+        }
     }
 
     List<String> sort(List<String> buffer){
@@ -142,25 +147,66 @@ public class ExtSort {
             cols.add(buffer.get(i).split(","));
         }
 
-        SortedMap<String, Integer> tmp_sort = new TreeMap<String, Integer>();
+        SortedMap<Integer, Integer> tmp_int_sort = new TreeMap<>();
+        SortedMap<String, Integer> tmp_sort = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+
+        boolean isInteger = false; // isInteger(cols.get(0)[k]); //to check if we need to sort on an integer or a string
+
+        //System.out.println("Cols size :" + cols.size());
 
         for(int j = 0; j < cols.size(); j++){
-            tmp_sort.put(cols.get(j)[k], j);
+            if(isInteger){
+                tmp_int_sort.put(Integer.valueOf(cols.get(j)[k]), j);
+            } else {
+                tmp_sort.put(cols.get(j)[k], j);
+            }
         }
 
         String tmp = "";
         List<String> tmp_buffer = new ArrayList<>();
 
-        for(Map.Entry entry : tmp_sort.entrySet()) {
-            int line = (int) entry.getValue();
-            tmp = buffer.get(line);
-            tmp_buffer.add(tmp);
+        if(isInteger){
+            for(Map.Entry entry : tmp_int_sort.entrySet()) {
+                int line = (int) entry.getValue();
+                tmp = buffer.get(line);
+                tmp_buffer.add(tmp);
+            }
+        } else {
+            for (Map.Entry entry : tmp_sort.entrySet()) {
+                int line = (int) entry.getValue();
+                tmp = buffer.get(line);
+                tmp_buffer.add(tmp);
+            }
         }
 
         buffer.clear();
         buffer.addAll(tmp_buffer);
 
         return buffer;
+    }
+
+    public static boolean isInteger(String str) {
+        if (str == null) {
+            return false;
+        }
+        int length = str.length();
+        if (length == 0) {
+            return false;
+        }
+        int i = 0;
+        if (str.charAt(0) == '-') {
+            if (length == 1) {
+                return false;
+            }
+            i = 1;
+        }
+        for (; i < length; i++) {
+            char c = str.charAt(i);
+            if (c < '0' || c > '9') {
+                return false;
+            }
+        }
+        return true;
     }
 
 }
