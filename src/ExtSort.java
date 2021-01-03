@@ -150,7 +150,7 @@ public class ExtSort {
         SortedMap<Integer, Integer> tmp_int_sort = new TreeMap<>();
         SortedMap<String, Integer> tmp_sort = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 
-        boolean isInteger = false; // isInteger(cols.get(0)[k]); //to check if we need to sort on an integer or a string
+        boolean isInteger = false; //to check if we need to sort on an integer or a string
 
         //System.out.println("Cols size :" + cols.size());
 
@@ -183,30 +183,6 @@ public class ExtSort {
         buffer.addAll(tmp_buffer);
 
         return buffer;
-    }
-
-    public static boolean isInteger(String str) {
-        if (str == null) {
-            return false;
-        }
-        int length = str.length();
-        if (length == 0) {
-            return false;
-        }
-        int i = 0;
-        if (str.charAt(0) == '-') {
-            if (length == 1) {
-                return false;
-            }
-            i = 1;
-        }
-        for (; i < length; i++) {
-            char c = str.charAt(i);
-            if (c < '0' || c > '9') {
-                return false;
-            }
-        }
-        return true;
     }
 
 }
