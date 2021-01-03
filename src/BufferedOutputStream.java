@@ -48,11 +48,10 @@ public class BufferedOutputStream implements CustomOutputStream{
                     this.buffer[i] = lineArray[i];
                     j = i;
                 }
-                this.buffer[j+1] = '\n';
+//                this.buffer[j+1] = '\n';
                 for(int k = 0; k < j+1; k++){
                     fileWriter.write(this.buffer[k]);
                 }
-                flushBuffer();
             } else {
                 int cpt_lineArray = 0;
                 while(cpt_lineArray < lineArray.length){

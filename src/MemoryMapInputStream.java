@@ -31,6 +31,7 @@ public class MemoryMapInputStream {
         this.tmpLine = "";
         this.tmpNextLine = "";
         this.EOF = false;
+        this.fileSize = 0;
     }
 
     void open() throws IOException {
@@ -168,7 +169,8 @@ public class MemoryMapInputStream {
             positionInMapBuff++;
             tmp.putChar((char) c);
             tmp.rewind();
-            decodedChar = Charset.forName("UTF-8").decode(tmp).charAt(indexOfCharacter);
+//            decodedChar = Charset.forName("UTF-8").decode(tmp).charAt(indexOfCharacter);
+            decodedChar = (char) tmp.get(indexOfCharacter);
             if (decodedChar != '\r' && decodedChar != '\n')
                 line.append(decodedChar);
         } while (mapBuff.remaining() > 0 && decodedChar != '\r' && decodedChar != '\n');
@@ -202,6 +204,6 @@ public class MemoryMapInputStream {
     }
 
     int getFileSize() {
-        return (int) file.length();
+        return (int) this.fileSize;
     }
 }

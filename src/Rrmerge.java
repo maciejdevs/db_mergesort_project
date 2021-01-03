@@ -1,17 +1,16 @@
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class Rrmerge {
 
     private List<String> f;
-    private List<Integer> buffer_sizes;
     private final int MMAP_INPUT_BUFFSIZE = 8192;
-    private final String OUTPUT_FILE = "src/output_file.txt";
+    private final String OUTPUT_FILE = "src/output_file.csv";
 
-    public Rrmerge(List<String> f, List<Integer> buffer_sizes) {
+    public Rrmerge(List<String> f) {
         this.f = f;
-        this.buffer_sizes = buffer_sizes;
     }
 
     void rrmerge_buffer_byte() throws IOException {
@@ -19,6 +18,7 @@ public class Rrmerge {
         outputStream.create();
 
         round_robin_buffered(outputStream);
+        outputStream.close();
     }
 
     void rrmerge_buffer_buffer() throws IOException {
@@ -26,22 +26,23 @@ public class Rrmerge {
         outputStream.create();
 
         round_robin_buffered(outputStream);
+        outputStream.close();
     }
 
-    void rrmerge_buffer_sizedBuffer() throws IOException {
-        for(int bufferSize : buffer_sizes) {
-            BufferedOutputStream outputStream = new BufferedOutputStream(OUTPUT_FILE, bufferSize);
-            outputStream.create();
-            round_robin_buffered(outputStream);
-        }
-    }
-
-    void rrmerge_buffer_mmap() throws IOException {
-        // TODO : Check le size du buffer de memeory map keskisposse ?
-        MemoryMapOutputStream outputStream = new MemoryMapOutputStream(OUTPUT_FILE, 4);
+    void rrmerge_buffer_sizedBuffer(int bufferSize) throws IOException {
+        BufferedOutputStream outputStream = new BufferedOutputStream(OUTPUT_FILE, bufferSize);
         outputStream.create();
 
         round_robin_buffered(outputStream);
+        outputStream.close();
+    }
+
+    void rrmerge_buffer_mmap(int bufferSize) throws IOException {
+        MemoryMapOutputStream outputStream = new MemoryMapOutputStream(OUTPUT_FILE, bufferSize);
+        outputStream.create();
+
+        round_robin_buffered(outputStream);
+        outputStream.close();
     }
 
 
@@ -50,6 +51,7 @@ public class Rrmerge {
         outputStream.create();
 
         round_robin_mmap(outputStream);
+        outputStream.close();
     }
 
     void rrmerge_mmap_buffer() throws IOException {
@@ -57,21 +59,23 @@ public class Rrmerge {
         outputStream.create();
 
         round_robin_buffered(outputStream);
+        outputStream.close();
     }
 
-    void rrmerge_mmap_sizedBuffer() throws IOException {
-        for(int bufferSize : buffer_sizes) {
-            BufferedOutputStream outputStream = new BufferedOutputStream(OUTPUT_FILE, bufferSize);
-            outputStream.create();
-            round_robin_mmap(outputStream);
-        }
-    }
-
-    void rrmerge_mmap_mmap() throws IOException {
-        MemoryMapOutputStream outputStream = new MemoryMapOutputStream(OUTPUT_FILE, 4);
+    void rrmerge_mmap_sizedBuffer(int bufferSize) throws IOException {
+        BufferedOutputStream outputStream = new BufferedOutputStream(OUTPUT_FILE, bufferSize);
         outputStream.create();
 
         round_robin_mmap(outputStream);
+        outputStream.close();
+    }
+
+    void rrmerge_mmap_mmap(int bufferSize) throws IOException {
+        MemoryMapOutputStream outputStream = new MemoryMapOutputStream(OUTPUT_FILE, bufferSize);
+        outputStream.create();
+
+        round_robin_mmap(outputStream);
+        outputStream.close();
     }
 
     private void round_robin_buffered(CustomOutputStream outputStream) throws IOException {
@@ -80,19 +84,21 @@ public class Rrmerge {
         String line = "";
         int cpt = f.size();
 
-
         for (String file : f) {
             tmp = new BufferedInputStream(file);
             tmp.open();
             buffer_streams.add(tmp);
         }
 
-        while(cpt > 0) {
-            for (BufferedInputStream buffer_stream : buffer_streams) {
-                if ((line = buffer_stream.readln()) != null) {
-                    outputStream.writeln(line + "\n");
+        while (cpt > 0) {
+            Iterator<BufferedInputStream> isIterator = buffer_streams.iterator();
+
+            while (isIterator.hasNext()) {
+                if ((line = isIterator.next().readln()) != null) {
+                    outputStream.writeln(line + '\n');
                 } else {
                     cpt--;
+                    isIterator.remove();
                 }
             }
         }
@@ -113,18 +119,19 @@ public class Rrmerge {
             buffer_streams.add(tmp);
         }
 
-        while(cpt > 0) {
-            for (MemoryMapInputStream buffer_stream : buffer_streams) {
-                if ((line = buffer_stream.readln()) != null) {
+        while (cpt > 0) {
+            Iterator<MemoryMapInputStream> isIterator = buffer_streams.iterator();
+
+            while (isIterator.hasNext()) {
+                if ((line = isIterator.next().readln()) != null) {
                     outputStream.writeln(line);
                 } else {
                     cpt--;
+                    isIterator.remove();
                 }
             }
         }
 
         outputStream.close();
     }
-
-
 }

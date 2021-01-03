@@ -19,14 +19,17 @@ public class RandomReading {
         int sum = 0;
         int p = 0;
         int l = 0;
+        String line;
         ByteInputStream is = new ByteInputStream(path);
         is.open();
 
         for (int i = 0; i < j; i++) {
             p = random.nextInt(is.getFileSize());
             is.seek(p, true);
-            l = is.readln().length();
-            sum += l;
+            if ((line = is.readln()) != null) {
+                l = line.length();
+                sum += l;
+            }
         }
 
         System.out.println("Sum: " + sum);

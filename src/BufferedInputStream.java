@@ -8,10 +8,10 @@ public class BufferedInputStream {
     private BufferedReader br;
     private int size;
     private char[] buffer;
-    private String tmpNextLine;
     private int currentBufferIndex;
     private boolean skipLeftEndLine;
     private int nbChars;
+    private long fileSize;
 
     private static int DEFAULT_CHAR_BUFFER_SIZE = 8192; // Default buffer size for the buffered reader
 
@@ -22,10 +22,10 @@ public class BufferedInputStream {
         this.path = path;
         this.br = null;
         this.size = DEFAULT_CHAR_BUFFER_SIZE;
-        this.tmpNextLine = "";
         this.currentBufferIndex = 0;
         this.skipLeftEndLine = false;
         this.nbChars = 0;
+        this.fileSize = 0;
     }
 
     public BufferedInputStream(String path, int size) {
@@ -39,6 +39,7 @@ public class BufferedInputStream {
             isOpen = true;
             file = new File(path);
             fileReader = new FileReader(file);
+            this.fileSize = file.length();
             br = new BufferedReader(fileReader);
             br.mark(getFileSize());
         }
@@ -114,7 +115,6 @@ public class BufferedInputStream {
                 FileReader tmp_fileReader = new FileReader(file);
                 tmp_fileReader.skip(pos);
                 fileReader = tmp_fileReader;
-                tmpNextLine = "";
                 currentBufferIndex = 0;
             } else {
                 fileReader.skip(pos);
@@ -132,7 +132,6 @@ public class BufferedInputStream {
             byte1 = br.read();
             br.reset();
         } else {
-            // TODO: repair this function
             PeekReader peekReader = new PeekReader(fileReader);
 
             byte1 = fileReader.read();
@@ -146,7 +145,7 @@ public class BufferedInputStream {
     }
 
     int getFileSize() {
-        return (int) file.length();
+        return (int) this.fileSize;
     }
 
     void deleteFile(){

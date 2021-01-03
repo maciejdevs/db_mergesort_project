@@ -13,6 +13,7 @@ public class ByteInputStream {
     private FileReader fileReader;
     private int currentPos;
     private FileReader tmp_fileReader;
+    private long fileSize;
 
     public ByteInputStream(String path) {
         this.file = null;
@@ -20,6 +21,7 @@ public class ByteInputStream {
         this.fileReader = null;
         this.path = path;
         this.currentPos = 0;
+        this.fileSize = 0;
     }
 
     void open() throws IOException {
@@ -27,6 +29,7 @@ public class ByteInputStream {
             isOpen = true;
             file = new File(path);
             fileReader = new FileReader(file);
+            this.fileSize = file.length();
         }
     }
 
@@ -45,19 +48,10 @@ public class ByteInputStream {
 
     void seek(int pos, boolean absolute) throws IOException {
         if (absolute) {
-//            FileReader tmp_fileReader = new FileReader(file);
-//            tmp_fileReader.skip(pos);
-//            this.fileReader = tmp_fileReader;
-//            currentPos = pos;
-
-            if (pos > currentPos) {
-                fileReader.skip(pos - currentPos);
-            } else {
-                FileReader tmp_fileReader = new FileReader(file);
-                tmp_fileReader.skip(pos);
-                this.fileReader = tmp_fileReader;
-                currentPos = pos;
-            }
+            FileReader tmp_fileReader = new FileReader(file);
+            tmp_fileReader.skip(pos);
+            this.fileReader = tmp_fileReader;
+            currentPos = pos;
         } else {
             fileReader.skip(pos);
             currentPos += pos;
@@ -73,6 +67,6 @@ public class ByteInputStream {
     }
 
     int getFileSize() {
-        return (int) file.length();
+        return (int) this.fileSize;
     }
 }

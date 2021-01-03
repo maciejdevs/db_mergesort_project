@@ -1,7 +1,4 @@
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.nio.Buffer;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -14,24 +11,6 @@ public abstract class BufferUtils {
 
     private final static int REPEAT_AMOUNT = 3;
     private static List<String[]> dataLines = new ArrayList<>();
-
-    /**
-     * Check if the string contains the entire next line.
-     *
-     * @param tmpNextLine the string that will be checked.
-     * @return true if the string contains at least two end of lines, false otherwise.
-     */
-    public static boolean containsNextLine(String tmpNextLine) {
-        int endLinesCounter = 0;
-
-        for (int i = 0; i < tmpNextLine.length(); i++) {
-            if (tmpNextLine.charAt(i) == '\n') {
-                endLinesCounter++;
-            }
-        }
-
-        return endLinesCounter > 1;
-    }
 
     public static void measureTimeFor(List<String> filesPath, int implementationNumber, List<Integer> bufferSizes, boolean sequential) throws IOException {
         switch (implementationNumber) {
@@ -71,7 +50,7 @@ public abstract class BufferUtils {
                         sequentialReading.length2();
                     }
 
-                    totalTime += getElapsedTime(startTime, file);
+                    totalTime += getElapsedTime(startTime);
                 } else {
                     for (int i = 0; i <= 2; i++) {
                         startTime = System.currentTimeMillis();
@@ -86,11 +65,11 @@ public abstract class BufferUtils {
                         }
 
                         if (i == 0) {
-                            totalTime100 += getElapsedTime(startTime, file);
+                            totalTime100 += getElapsedTime(startTime);
                         } else if (i == 1) {
-                            totalTime1000 += getElapsedTime(startTime, file);
+                            totalTime1000 += getElapsedTime(startTime);
                         } else {
-                            totalTime10000 += getElapsedTime(startTime, file);
+                            totalTime10000 += getElapsedTime(startTime);
                         }
                     }
                 }
@@ -98,22 +77,17 @@ public abstract class BufferUtils {
 
             if (sequential) {
                 double avgTime = (totalTime / (double) REPEAT_AMOUNT);
-                avgTime = (double) Math.round(avgTime * 100000d) / 100000d;
-                dataLines.add(new String[]{file, Double.toString(avgTime)});
+                dataLines.add(new String[]{Double.toString(avgTime)});
                 System.out.println("Filename: '" + file + "', elapsed time average: " + Double.toString(avgTime));
                 System.out.println("---------------------------------------------------------------\n");
             } else {
                 double avgTime100 = (totalTime100 / (double) REPEAT_AMOUNT);
                 double avgTime1000 = (totalTime1000 / (double) REPEAT_AMOUNT);
                 double avgTime10000 = (totalTime10000 / (double) REPEAT_AMOUNT);
-                avgTime100 = (double) Math.round(avgTime100 * 100000d) / 100000d;
-                avgTime1000 = (double) Math.round(avgTime1000 * 100000d) / 100000d;
-                avgTime10000 = (double) Math.round(avgTime10000 * 100000d) / 100000d;
                 dataLines.add(new String[]{
-                        file,
-                        Double.toString(avgTime100),
-                        Double.toString(avgTime1000),
-                        Double.toString(avgTime10000)}
+                                Double.toString(avgTime100),
+                                Double.toString(avgTime1000),
+                                Double.toString(avgTime10000)}
                 );
                 System.out.println(
                         "Filename: '" + file +
@@ -154,7 +128,7 @@ public abstract class BufferUtils {
                         }
 
                         System.out.println("Buffer size: " + bufferSize);
-                        totalTime += getElapsedTime(startTime, file);
+                        totalTime += getElapsedTime(startTime);
                     } else {
                         for (int i = 0; i <= 2; i++) {
                             startTime = System.currentTimeMillis();
@@ -170,11 +144,11 @@ public abstract class BufferUtils {
 
                             System.out.println("Buffer size: " + bufferSize);
                             if (i == 0) {
-                                totalTime100 += getElapsedTime(startTime, file);
+                                totalTime100 += getElapsedTime(startTime);
                             } else if (i == 1) {
-                                totalTime1000 += getElapsedTime(startTime, file);
+                                totalTime1000 += getElapsedTime(startTime);
                             } else {
-                                totalTime10000 += getElapsedTime(startTime, file);
+                                totalTime10000 += getElapsedTime(startTime);
                             }
                         }
                     }
@@ -182,22 +156,18 @@ public abstract class BufferUtils {
 
                 if (sequential) {
                     double avgTime = (totalTime / (double) REPEAT_AMOUNT);
-                    avgTime = (double) Math.round(avgTime * 100000d) / 100000d;
-                    dataLines.add(new String[]{file, Double.toString(avgTime)});
+                    dataLines.add(new String[]{Double.toString(avgTime)});
                     System.out.println("Filename: '" + file + "', elapsed time average: " + Double.toString(avgTime));
                     System.out.println("---------------------------------------------------------------\n");
                 } else {
                     double avgTime100 = (totalTime100 / (double) REPEAT_AMOUNT);
                     double avgTime1000 = (totalTime1000 / (double) REPEAT_AMOUNT);
                     double avgTime10000 = (totalTime10000 / (double) REPEAT_AMOUNT);
-                    avgTime100 = (double) Math.round(avgTime100 * 100000d) / 100000d;
-                    avgTime1000 = (double) Math.round(avgTime1000 * 100000d) / 100000d;
-                    avgTime10000 = (double) Math.round(avgTime10000 * 100000d) / 100000d;
                     dataLines.add(new String[]{
-                            file,
-                            Double.toString(avgTime100),
-                            Double.toString(avgTime1000),
-                            Double.toString(avgTime10000)}
+//                            file,
+                                    Double.toString(avgTime100),
+                                    Double.toString(avgTime1000),
+                                    Double.toString(avgTime10000)}
                     );
                     System.out.println(
                             "Filename: '" + file + "', buffer: " + bufferSize +
@@ -212,19 +182,17 @@ public abstract class BufferUtils {
         }
     }
 
-    private static double getElapsedTime(long startTime, String file) {
+    private static double getElapsedTime(long startTime) {
         long stopTime;
         long elapsedTime;
-        double elapsedTimeInSecond;
         stopTime = System.currentTimeMillis();
         elapsedTime = stopTime - startTime;
-        elapsedTimeInSecond = (double) elapsedTime / 1000;
 
-        return elapsedTimeInSecond;
+        return elapsedTime;
     }
 
     private static void saveDataToCSV(int implement, String type, int buffer) {
-        File csvOutputFile = new File((type + "_" + getImplementName(implement)) + (buffer != -1 ? ("_" + buffer) : ""));
+        File csvOutputFile = new File((type + "_" + getImplementName(implement)) + (buffer != -1 ? ("_" + buffer) : "") + ".csv");
 
         try (PrintWriter pw = new PrintWriter(csvOutputFile)) {
             dataLines.stream()
@@ -233,6 +201,23 @@ public abstract class BufferUtils {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+    }
+
+    private static void saveRrmergeDataToCSV(int implement, String type, int buffer, String textToAppend) {
+        File csvOutputFile = new File((type + "_" + getImplementName(implement)) + (buffer != -1 ? ("_" + buffer) : "") + ".csv");
+
+        BufferedWriter writer = null;
+
+        try {
+            writer = new BufferedWriter(
+                    new FileWriter(csvOutputFile, true));
+
+            writer.write(textToAppend + "\n");
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     private static String getImplementName(int implement) {
@@ -252,6 +237,128 @@ public abstract class BufferUtils {
     public static String convertToCSV(String[] data) {
         return Stream.of(data)
                 .collect(Collectors.joining(","));
+    }
+
+    public static void measureTimeForRrmerge(List<String> filesPath, List<Integer> bufferSizes, int x, int y) throws IOException {
+        switch (y) {
+            case 1:
+            case 2:
+                benchmarkRrmergeWithoutBuffer(filesPath, x, y);
+                break;
+            case 3:
+            case 4:
+                benchmarkRrmergeWithBuffer(filesPath, bufferSizes, x, y);
+                break;
+        }
+    }
+
+    public static void benchmarkRrmergeWithoutBuffer(List<String> filesPath, int x, int y) {
+        long startTime;
+        double totalTime;
+        System.out.println("Implementation rrmerge, x: " + x + ", y: " + y + ", files: " + filesPath.toString());
+
+        try {
+            Rrmerge rrmerge = new Rrmerge(filesPath);
+
+            totalTime = 0;
+
+            for (int repeatIdx = 0; repeatIdx < REPEAT_AMOUNT; repeatIdx++) {
+                startTime = System.currentTimeMillis();
+
+                switch (x) {
+                    case 2:
+                        switch (y) {
+                            case 1:
+                                rrmerge.rrmerge_buffer_byte();
+                                break;
+                            case 2:
+                                rrmerge.rrmerge_buffer_buffer();
+                                break;
+                        }
+                        break;
+                    case 4:
+                        switch (y) {
+                            case 1:
+                                rrmerge.rrmerge_mmap_byte();
+                                break;
+                            case 2:
+                                rrmerge.rrmerge_mmap_buffer();
+                                break;
+                        }
+                        break;
+                }
+
+                totalTime += getElapsedTime(startTime);
+                System.out.println(totalTime);
+            }
+
+            double avgTime = (totalTime / (double) REPEAT_AMOUNT);
+            dataLines.add(new String[]{Double.toString(avgTime)});
+            System.out.println("Merging elapsed time: " + Double.toString(avgTime));
+            System.out.println("---------------------------------------------------------------\n");
+            saveDataToCSV(y, "rrmerge" + (x == 2 ? "_buffered" : "_mmap"), -1);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void benchmarkRrmergeWithBuffer(List<String> filesPath, List<Integer> bufferSizes, int x, int y) {
+        long startTime;
+        double totalTime;
+        dataLines.clear();
+
+        try {
+            Rrmerge rrmerge = new Rrmerge(filesPath);
+
+            for (int bufferSize : bufferSizes) {
+                System.out.println("Implementation rrmerge, x: " + x + ", y: " + y + ", files: " + filesPath.toString() + ", buffer: " + bufferSize);
+                dataLines.clear();
+                totalTime = 0;
+
+                for (int repeatIdx = 0; repeatIdx < REPEAT_AMOUNT; repeatIdx++) {
+                    startTime = System.currentTimeMillis();
+
+                    switch (x) {
+                        case 2:
+                            switch (y) {
+                                case 3:
+                                    rrmerge.rrmerge_buffer_sizedBuffer(bufferSize);
+                                    break;
+                                case 4:
+                                    rrmerge.rrmerge_buffer_mmap(bufferSize);
+                                    break;
+                            }
+                            break;
+                        case 4:
+                            switch (y) {
+                                case 3:
+                                    rrmerge.rrmerge_mmap_sizedBuffer(bufferSize);
+                                    break;
+                                case 4:
+                                    rrmerge.rrmerge_mmap_mmap(bufferSize);
+                                    break;
+                            }
+                            break;
+                    }
+
+                    totalTime += getElapsedTime(startTime);
+                    System.out.println(totalTime);
+                }
+
+                double avgTime = (totalTime / (double) REPEAT_AMOUNT);
+
+                System.out.println("Merging elapsed time: " + Double.toString(avgTime) + ", buffer: " + bufferSize);
+                System.out.println("---------------------------------------------------------------\n");
+                String lineToSave = Double.toString(avgTime);
+                saveRrmergeDataToCSV(y, "rrmerge" + (x == 2 ? "_buffered" : "_mmap"), bufferSize, lineToSave);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void clearDataLines() {
+        dataLines.clear();
     }
 
 }

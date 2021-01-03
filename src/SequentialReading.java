@@ -16,8 +16,7 @@ public class SequentialReading {
         is.open();
         String line = "";
 
-        while (!is.endofstream()) {
-            line = is.readln();
+        while ((line = is.readln()) != null) {
             sum += line.length();
 //            System.out.println(counter++);
         }

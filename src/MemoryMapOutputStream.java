@@ -8,6 +8,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.Arrays;
 import java.util.EnumSet;
 
 public class MemoryMapOutputStream implements CustomOutputStream{
@@ -17,17 +18,25 @@ public class MemoryMapOutputStream implements CustomOutputStream{
     private FileChannel fileChannel;
     private MappedByteBuffer mapBuff;
     private int offset;
+    private char[] buffer;
+    private int spaceLeftInBuffer;
+    private int charsCounter;
 
 
     public MemoryMapOutputStream(String path) {
         this.path = path;
         this.buffSize = 0;
         this.offset = 0;
+        this.spaceLeftInBuffer = 0;
+        this.charsCounter = 0;
     }
 
     public MemoryMapOutputStream(String path, int buffSize) {
         this(path);
         this.buffSize = buffSize;
+        this.buffer = new char[buffSize];
+        this.spaceLeftInBuffer = 0;
+        this.charsCounter = 0;
     }
 
     void create() throws IOException {
@@ -36,22 +45,47 @@ public class MemoryMapOutputStream implements CustomOutputStream{
         this.fileChannel = (FileChannel)Files.newByteChannel(Paths.get(this.path), EnumSet.of(StandardOpenOption.READ, StandardOpenOption.WRITE));
     }
 
-    void allocateMemory(String line) throws IOException {
-        if (this.mapBuff != null) {
-            this.mapBuff.force();
+    boolean allocateMemory(int remaining) throws IOException {
+        if(this.mapBuff != null && this.mapBuff.position() < buffSize) {
+            return false;
         }
 
-        this.buffSize = line.length();
-        this.mapBuff = this.fileChannel.map(MapMode.READ_WRITE, this.offset, this.buffSize);
-        this.offset += this.buffSize;
+        if (remaining > 0) {
+            if (this.mapBuff != null) {
+                this.mapBuff.force();
+            }
+
+            this.mapBuff = this.fileChannel.map(MapMode.READ_WRITE, this.offset, 2 * this.buffSize);
+            this.offset += this.buffSize;
+            this.spaceLeftInBuffer = this.buffSize;
+
+            return true;
+        }
+
+        return false;
     }
 
     @Override
     public void writeln(String line) throws IOException {
-        this.allocateMemory(line);
         CharBuffer charBuff = CharBuffer.wrap(line);
-        this.mapBuff.put(Charset.forName("utf-8").encode(charBuff));
-        this.mapBuff.clear();
+        this.allocateMemory(charBuff.remaining());
+
+        while(charBuff.remaining() > 0) {
+            int size = 0;
+            int availableSpace = spaceLeftInBuffer - charsCounter;
+
+            if(charBuff.length() <= availableSpace) {
+                size = charBuff.length();
+            } else {
+                size = availableSpace;
+            }
+
+            buffer = new char[size];
+            charBuff.get(buffer, 0, size);
+            this.mapBuff.put(Charset.forName("utf-8").encode(CharBuffer.wrap(buffer)));
+            this.spaceLeftInBuffer -= size;
+            allocateMemory(charBuff.remaining());
+        }
     }
 
     @Override
