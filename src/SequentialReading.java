@@ -11,14 +11,13 @@ public class SequentialReading {
 
     public void length1() throws IOException {
         int sum = 0;
-        int counter = 0;
         ByteInputStream is = new ByteInputStream(path);
         is.open();
         String line = "";
 
-        while ((line = is.readln()) != null) {
+        while (!is.endofstream()) {
+            line = is.readln();
             sum += line.length();
-//            System.out.println(counter++);
         }
 
         System.out.println("\nSum: " + sum);
@@ -26,14 +25,12 @@ public class SequentialReading {
 
     public void length2() throws IOException {
         int sum = 0;
-        int counter = 0;
         BufferedInputStream is = new BufferedInputStream(path);
         is.open();
         String line = null;
 
         while ((line = is.readln()) != null) {
             sum += line.length();
-//            System.out.println(counter++);
         }
 
         System.out.println("\nSum: " + sum);

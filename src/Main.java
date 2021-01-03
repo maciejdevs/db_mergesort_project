@@ -1,16 +1,9 @@
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.sql.SQLOutput;
-import java.nio.CharBuffer;
-import java.nio.charset.Charset;
-import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class Main {
 
@@ -86,13 +79,12 @@ public class Main {
     );
 
     private final static List<Integer> mergeSortBufferSizes = Arrays.asList(
-           2048, 8192, 16384, 65536
+            2048, 8192, 16384, 65536
     );
 
     private final static List<Integer> mergeSortStreams = Arrays.asList(
             8, 12, 16, 18, 20
     );
-
 
 
     private final static List<Integer> rrmergeBufferSizes = Arrays.asList(
@@ -110,52 +102,6 @@ public class Main {
                 Exception e) {
             e.printStackTrace();
         }
-    }
-
-    private static void testExperimentMergeSort() throws IOException {
-        long start;
-        long finish;
-        long timeElapsed;
-
-        int totalTime = 0;
-        double averageTime = 0;
-        String results = "";
-
-        for(String f : mergeSortTestFiles){
-            for(int M : mergeSortBufferSizes){
-                for(int d : mergeSortStreams){
-                    for(int i = 0; i < 10; i++) {
-                        start = System.currentTimeMillis();
-
-                        ExtSort extSort = new ExtSort(f, 1, M, d);
-                        extSort.mergesort();
-
-                        finish = System.currentTimeMillis();
-                        timeElapsed = finish - start;
-                        totalTime += timeElapsed;
-
-                        System.out.println("f : " + f);
-                        System.out.println("M : " + M);
-                        System.out.println("d : " + d);
-                        System.out.println("Elapsed time : " + timeElapsed + " ms");
-                        extSort.deleteTmp();
-                    }
-                    averageTime = totalTime / 10;
-                    totalTime = 0;
-                    results += "File : " + f + " \n";
-                    results += "File size " + Files.size(Paths.get(f)) + " \n";
-                    results += "Buffer Size : " + M + "\n";
-                    results += "Merge streams : " + d + "\n";
-                    results += "Average Time : " + averageTime + " ms \n";
-                    results += " ----------------------------------------- \n \n";
-                }
-            }
-        }
-
-        File file = new File("src/results.txt");
-        FileWriter fw = new FileWriter(file);
-        fw.write(results);
-        fw.close();
     }
 
     private static void testExperimentReadingSequential() throws IOException {
@@ -214,7 +160,52 @@ public class Main {
         BufferUtils.measureTimeForRrmerge(mediumFiles, rrmergeBufferSizes, 4, 4);
         BufferUtils.measureTimeForRrmerge(bigFiles, rrmergeBufferSizes, 4, 4);
         BufferUtils.measureTimeForRrmerge(mixedFiles, rrmergeBufferSizes, 4, 4);
+    }
 
+    private static void testExperimentMergeSort() throws IOException {
+        long start;
+        long finish;
+        long timeElapsed;
+
+        int totalTime = 0;
+        double averageTime = 0;
+        String results = "";
+
+        for (String f : mergeSortTestFiles) {
+            for (int M : mergeSortBufferSizes) {
+                for (int d : mergeSortStreams) {
+                    for (int i = 0; i < 10; i++) {
+                        start = System.currentTimeMillis();
+
+                        ExtSort extSort = new ExtSort(f, 1, M, d);
+                        extSort.mergesort();
+
+                        finish = System.currentTimeMillis();
+                        timeElapsed = finish - start;
+                        totalTime += timeElapsed;
+
+                        System.out.println("f : " + f);
+                        System.out.println("M : " + M);
+                        System.out.println("d : " + d);
+                        System.out.println("Elapsed time : " + timeElapsed + " ms");
+                        extSort.deleteTmp();
+                    }
+                    averageTime = totalTime / 10;
+                    totalTime = 0;
+                    results += "File : " + f + " \n";
+                    results += "File size " + Files.size(Paths.get(f)) + " \n";
+                    results += "Buffer Size : " + M + "\n";
+                    results += "Merge streams : " + d + "\n";
+                    results += "Average Time : " + averageTime + " ms \n";
+                    results += " ----------------------------------------- \n \n";
+                }
+            }
+        }
+
+        File file = new File("src/results.txt");
+        FileWriter fw = new FileWriter(file);
+        fw.write(results);
+        fw.close();
     }
 
 }
